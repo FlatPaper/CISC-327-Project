@@ -42,9 +42,9 @@ Student Number: 20240578
 
 Team Member #2:
 
-Name:
+Name: David Kropinski
 
-Student Number:	
+Student Number:	20226563
 
 
 Team Member #3:
