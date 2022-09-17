@@ -49,9 +49,9 @@ Student Number:
 
 Team Member #3:
 
-Name:
+Name: Caleb Chiu
 
-Student Number:	
+Student Number:	20237010
 
 
 Team Member #4:
