@@ -35,9 +35,9 @@ We each promise to make our best effort to ensure that the team works together a
 
 Team Member #1:
 
-Name: Jonathan Sumabat
+Name:
 
-Student Number: 20240578
+Student Number:
 
 
 Team Member #2:
