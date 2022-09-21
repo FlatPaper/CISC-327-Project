@@ -26,4 +26,4 @@ class Review(db.Model):
     text = db.Column(db.String(2000), nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
-    listing = db.Column(db.Integer, db.ForeignKey('listing.listing_id'))
+    listing = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
