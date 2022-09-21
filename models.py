@@ -19,7 +19,7 @@ class ReviewStarsEnum(enum.IntEnum):
 
 
 class Review(db.Model):
-    __tablename__ = 'comments'
+    __tablename__ = 'reviews'
     review_id = db.Column(db.Integer, primary_key=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
