@@ -7,8 +7,8 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model):
-    # An object to display a user
-    
+    # An object to display a user entity
+
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
