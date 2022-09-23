@@ -28,6 +28,7 @@ class User(db.Model):
     location = db.Column(db.String(150), nullable=False)
     response_rate = db.Column(db.Integer, nullable=False)
     listings = db.relationship('Listing', backref='users')
+    reviews = db.relationship('Review', backref='users')
     
     
 class Listing(db.Model):
@@ -35,7 +36,7 @@ class Listing(db.Model):
     An Object to Express a property listing.\n
 
     Properties:\n
-    listing_id-- The integer ID for the listing\n
+    listing_id -- The integer ID for the listing\n
     address   -- A String in the form country,province,city,street,number \n
     user_id   -- The user who that made the listing\n
     price   -- A float, price per night of the property\n
@@ -54,7 +55,7 @@ class Listing(db.Model):
     price = db.Column(db.Integer)
     description = db.Column(db.String(500))
     rating = db.Column(db.Integer)
-    reviews = db.relationship('Review', backref='reviews', lazy=True)
+    reviews = db.relationship('Review', backref='listings', lazy=True)
     picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
