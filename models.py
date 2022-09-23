@@ -28,6 +28,7 @@ class User(db.Model):
     response_rate = db.Column(db.Integer, nullable=False)
     listings = db.relationship('Listing', backref='user')
     reviews = db.relationship('Review', backref='user')
+    transaction = db.relationship('Transaction', backref='user')
     
     
 class Listing(db.Model):
@@ -58,6 +59,7 @@ class Listing(db.Model):
     picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
+    transactions = db.relationship('Transaction', backref='listing')
 
 
 class ReviewStarsEnum(enum.IntEnum):
@@ -91,7 +93,6 @@ class Review(db.Model):
 
 
 class Transaction(db.Model):
-
     """
         A Transaction object represents a succcessful transaction to rent a property listing.
 
