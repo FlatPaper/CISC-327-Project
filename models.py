@@ -28,15 +28,7 @@ class Listing(db.Model):
     price = db.Column(db.Integer)
     dscrpt = db.Column(db.String(500))
     rating = db.Column(db.Integer)
-
-    def __init__(self,id:int,address: list, owner, price: float,
-                 aval: list, pics: list, dscrpt: str):
-        self.listing_id = id
-        self.address = address
-        self.user_id = owner
-        self.price = price
-        self.rating = 0
-        self.dscrpt = dscrpt
-        self.pics = pics
-        self.aval = aval
-        self.reviews = []
+    reviews = db.relationship('Review', backref = 'reviews', lazy = True)
+    picture = db.Column(db.String(200))
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
