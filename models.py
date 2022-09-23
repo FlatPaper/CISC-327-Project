@@ -1,4 +1,6 @@
 import datetime
+import enum
+
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -25,7 +27,8 @@ class User(db.Model):
     about = db.Column(db.String(2000), nullable=False)
     location = db.Column(db.String(150), nullable=False)
     response_rate = db.Column(db.Integer, nullable=False)
-    listings = db.relationship('Listing', backref='users')
+    listings = db.relationship('Listing', backref='user')
+    reviews = db.relationship('Review', backref='user')
     
     
 class Listing(db.Model):
@@ -33,7 +36,7 @@ class Listing(db.Model):
     An Object to Express a property listing.\n
 
     Properties:\n
-    listing_id-- The integer ID for the listing\n
+    listing_id -- The integer ID for the listing\n
     address   -- A String in the form country,province,city,street,number \n
     user_id   -- The user who that made the listing\n
     price   -- A float, price per night of the property\n
@@ -52,8 +55,37 @@ class Listing(db.Model):
     price = db.Column(db.Integer)
     description = db.Column(db.String(500))
     rating = db.Column(db.Integer)
-    reviews = db.relationship('Review', backref='reviews', lazy=True)
+    reviews = db.relationship('Review', backref='listing', lazy=True)
     picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
-    
+
+
+class ReviewStarsEnum(enum.IntEnum):
+    none = 0
+    one = 1
+    two = 2
+    three = 3
+    four = 4
+    five = 5
+
+
+class Review(db.Model):
+    """
+    A review model such that Users can leave reviews on listings.
+
+    review_id -- id for the review model, the primary_key
+    user_id -- the id of the user posting this review
+    text -- the text of the review
+    stars -- star rating of the review
+    time -- time the review was posted
+    listing -- the listing this review was posted on
+    """
+    __tablename__ = 'reviews'
+
+    review_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    text = db.Column(db.String(2000), nullable=False)
+    stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
+    time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    listing = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
