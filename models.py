@@ -32,3 +32,4 @@ class Listing(db.Model):
     picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
+    
