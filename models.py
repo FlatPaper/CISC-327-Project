@@ -9,11 +9,11 @@ db = SQLAlchemy(app)
 class User(db.Model):
     # An object to display a user entity
     
-    '''
+    """
     languages -- A list of languages the user speaks
     listings -- A list of listings the user has 
     pfp -- A profile picture on the user's profile
-    '''
+    """
 
     __tablename__ = 'users'
 
@@ -24,3 +24,4 @@ class User(db.Model):
     about = db.Column(db.String(2000), nullable=False)
     location = db.Column(db.String(150), nullable=False)
     response_rate = db.Column(db.Integer, nullable=False)
+
