@@ -27,8 +27,8 @@ class User(db.Model):
     about = db.Column(db.String(2000), nullable=False)
     location = db.Column(db.String(150), nullable=False)
     response_rate = db.Column(db.Integer, nullable=False)
-    listings = db.relationship('Listing', backref='users')
-    reviews = db.relationship('Review', backref='users')
+    listings = db.relationship('Listing', backref='user')
+    reviews = db.relationship('Review', backref='user')
     
     
 class Listing(db.Model):
@@ -55,7 +55,7 @@ class Listing(db.Model):
     price = db.Column(db.Integer)
     description = db.Column(db.String(500))
     rating = db.Column(db.Integer)
-    reviews = db.relationship('Review', backref='listings', lazy=True)
+    reviews = db.relationship('Review', backref='listing', lazy=True)
     picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
