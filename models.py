@@ -70,9 +70,19 @@ class ReviewStarsEnum(enum.IntEnum):
 
 
 class Review(db.Model):
-    __tablename__ = 'reviews'
-    review_id = db.Column(db.Integer, primary_key=True)
+    """
+    A review model such that Users can leave reviews on listings.
 
+    review_id -- id for the review model, the primary_key
+    user_id -- the id of the user posting this review
+    text -- the text of the review
+    stars -- star rating of the review
+    time -- time the review was posted
+    listing -- the listing this review was posted on
+    """
+    __tablename__ = 'reviews'
+
+    review_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     text = db.Column(db.String(2000), nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
