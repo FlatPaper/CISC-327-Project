@@ -115,4 +115,4 @@ class Transaction(db.Model):
     user_balance = db.Column(db.Integer, 'users.user_balance')
     transaction_time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     transaction_id = db.Column(db.Integer, unique=True, nullable=True)
-    currency = db.Column(db.string(100), nullable=False)
+    currency = db.Column(db.String(100), nullable=False)
