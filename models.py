@@ -108,10 +108,10 @@ class Transaction(db.Model):
 
     __tablename__ = 'transactions'
 
-    listing_id = db.Column(db.Integer, primary_key = true)
+    listing_id = db.Column(db.Integer, primary_key=true)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    price = db.Column(db.Integer, nullable = False)
+    price = db.Column(db.Integer, nullable=False)
     user_balance = db.Column(db.Integer, 'users.user_balance')
-    trans_time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
-    trans_id = db.Column(db.Integer, unique = True, nullable = True)
-    currency = db.Column(db.string(100), nullable = False)
+    transaction_time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    transaction_id = db.Column(db.Integer, unique=True, nullable=True)
+    currency = db.Column(db.string(100), nullable=False)
