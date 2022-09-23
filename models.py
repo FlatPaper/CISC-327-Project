@@ -10,7 +10,6 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     # An object to display a user entity
-    
     """
     languages -- A list of languages the user speaks
     listings -- A list of listings the user has 
@@ -26,10 +25,12 @@ class User(db.Model):
     about = db.Column(db.String(2000), nullable=False)
     location = db.Column(db.String(150), nullable=False)
     response_rate = db.Column(db.Integer, nullable=False)
+    listings = db.relationship('Listing', backref='users')
     
     
 class Listing(db.Model):
-    """An Object to Express a property listing.\n
+    """
+    An Object to Express a property listing.\n
 
     Properties:\n
     listing_id-- The integer ID for the listing\n
@@ -42,14 +43,16 @@ class Listing(db.Model):
     aval    -- A list of pairs of days
     reviews -- A list of "Review" objects\n
     """
+
     __tablename__ = 'listings'
+
     listing_id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(200), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     price = db.Column(db.Integer)
-    dscrpt = db.Column(db.String(500))
+    description = db.Column(db.String(500))
     rating = db.Column(db.Integer)
-    reviews = db.relationship('Review', backref = 'reviews', lazy = True)
+    reviews = db.relationship('Review', backref='reviews', lazy=True)
     picture = db.Column(db.String(200))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
