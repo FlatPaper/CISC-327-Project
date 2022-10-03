@@ -1,11 +1,10 @@
+from qbay import app
+from flask_sqlalchemy import SQLAlchemy
+
 import datetime
 import enum
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 db = SQLAlchemy(app)
 
 
@@ -13,7 +12,7 @@ class User(db.Model):
     # An object to display a user entity
     """
     languages -- A list of languages the user speaks
-    listings -- A list of listings the user has 
+    listings -- A list of listings the user has
     pfp -- A profile picture on the user's profile
     """
 
@@ -26,11 +25,12 @@ class User(db.Model):
     about = db.Column(db.String(2000), nullable=False)
     location = db.Column(db.String(150), nullable=False)
     response_rate = db.Column(db.Integer, nullable=False)
+    user_balance = db.Column(db.Integer, nullable=False)
     listings = db.relationship('Listing', backref='user')
     reviews = db.relationship('Review', backref='user')
     transaction = db.relationship('Transaction', backref='user')
-    
-    
+
+
 class Listing(db.Model):
     """
     An Object to Express a property listing.\n
@@ -85,7 +85,8 @@ class Review(db.Model):
     __tablename__ = 'reviews'
 
     review_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'),
+                        nullable=False)
     text = db.Column(db.String(2000), nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
@@ -94,14 +95,16 @@ class Review(db.Model):
 
 class Transaction(db.Model):
     """
-        A Transaction object represents a succcessful transaction to rent a property listing.
+        A Transaction object represents a succcessful transaction to rent a
+        property listing.
 
         Includes the following properties:
 
         listing_id: Numeric ID of the property being rented
         user_id: Numeric ID of the user renting the property
         price: The price the listing was rented for
-        user_balance: The amount of money the user has remaining after the transaction
+        user_balance: The amount of money the user has
+                      remaining after the transaction
         transac_time: The time at which the transaction occurred
         trans_id: Numeric ID of the processed transaction
         currency: The currency the user used to pay qB&B
@@ -109,10 +112,14 @@ class Transaction(db.Model):
 
     __tablename__ = 'transactions'
 
-    listing_id = db.Column(db.Integer, primary_key=true)
+    listing_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     price = db.Column(db.Integer, nullable=False)
-    user_balance = db.Column(db.Integer, 'users.user_balance')
-    transaction_time = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    user_balance = db.Column(db.Integer, db.ForeignKey('users.user_balance'))
+    transaction_time = db.Column(db.DateTime,
+                                 default=datetime.datetime.utcnow())
     transaction_id = db.Column(db.Integer, unique=True, nullable=True)
     currency = db.Column(db.String(100), nullable=False)
+
+
+db.create_all()
