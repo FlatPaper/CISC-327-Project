@@ -214,3 +214,23 @@ def register(username: str, email: str, password: str):
 
     return True, "User has been created!"
 
+
+def login(email: str, password: str):
+    # Validate email constraints
+    flag, msg = validate_email(email)
+    if flag is False:
+        return flag, msg
+
+    # Validate password constraints
+    flag, msg = validate_password(password)
+    if flag is False:
+        return flag, msg
+
+    match_accounts = User.query.filter_by(email=email, password=password).all()
+    if len(match_accounts) < 1:
+        return None, "This account does not exist"
+    # Check for an "impossible" situation for debugging purposes in the future
+    if len(match_accounts) > 1:
+        return None, "There are more than one accounts with this email!"
+
+    return match_accounts[0], "This account exists."
