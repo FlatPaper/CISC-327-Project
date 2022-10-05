@@ -143,16 +143,22 @@ EMAIL_REGEX = re.compile(r"([-!#-'*+/-9=?A-Z^-~]+(\.["
                          r"-!#-'*+/-9=?A-Z^-~]+)*|\[[\t -Z^-~]*])")
 
 
-def register(username: str, email: str, password: str):
-    # Check for empty email and password fields
+def validate_email(email: str):
+    # Check for empty email field
     if len(email) == 0:
         return False, "Email cannot be empty."
-    if len(password) == 0:
-        return False, "Password cannot be empty."
 
     # Check that email matches RFC 5322 constraints with a very long regex
     if not EMAIL_REGEX.match(email):
-        return False, "Email does not follow addr-spec defined in RFC 5322/"
+        return False, "Email does not follow addr-spec defined in RFC 5322."
+
+    return True, "Email is in the correct format."
+
+
+def validate_password(password: str):
+    # Check for empty email and password fields
+    if len(password) == 0:
+        return False, "Password cannot be empty."
 
     # Check for password complexity constraints
     if len(password) < 6:
@@ -163,6 +169,20 @@ def register(username: str, email: str, password: str):
         return False, "The password does not contain any lowercase characters."
     if not any(not ch.isalnum() for ch in password):
         return False, "The password does not contain any special characters."
+
+    return True, "Password meets the constraints."
+
+
+def register(username: str, email: str, password: str):
+    # Validate the email constraints
+    flag, msg = validate_email(email)
+    if flag is False:
+        return flag, msg
+
+    # Validate the password constraints
+    flag, msg = validate_password(password)
+    if flag is False:
+        return flag, msg
 
     # Check for username constraints
     if len(username) == 0:
@@ -193,3 +213,4 @@ def register(username: str, email: str, password: str):
     db.session.commit()
 
     return True, "User has been created!"
+
