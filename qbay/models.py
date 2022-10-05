@@ -137,19 +137,10 @@ class Booking(db.Model):
 
 db.create_all()
 
-EMAIL_REGEX = re.compile(r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\."
-                         r"[a-z0-9!#$%&'*+/=^_`{|}~-]+)*"
-                         r"|\"(?:["
-                         r"\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]"
-                         r"|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@"
-                         r"(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]"
-                         r"(?:[a-z0-9-]*[a-z0-9])?"
-                         r"|\[(?:(?:(2(5[0-5]|[0-4][0-9])"
-                         r"|1[0-9][0-9]|[1-9]?[0-9]))\.){3}("
-                         r"?:(2(5[0-5]|[0-4][0-9])"
-                         r"|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:"
-                         r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]"
-                         r"|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])")
+EMAIL_REGEX = re.compile(r"([-!#-'*+/-9=?A-Z^-~]+(\.["
+                         r"-!#-'*+/-9=?A-Z^-~]+)*|\"([]!#-[^-~ \t]|(\\[\t "
+                         r"-~]))+\")@([-!#-'*+/-9=?A-Z^-~]+(\.["
+                         r"-!#-'*+/-9=?A-Z^-~]+)*|\[[\t -Z^-~]*])")
 
 
 def register(username: str, email: str, password: str):
@@ -177,11 +168,13 @@ def register(username: str, email: str, password: str):
     if len(username) == 0:
         return False, "The username is empty."
     if len(username) <= 2 or len(username) >= 20:
-        return False, "The username must be longer than 2 characters " \
-                      "and shorter than 20 characters."
+        error_info = "The username must be longer than 2 characters and " \
+                     "shorter than 20 characters. "
+        return False, error_info
     if not all(ch.isalnum() or ch.isspace() for ch in username):
-        return False, "The username contains characters that are " \
-                      "not alphanumeric or a space."
+        error_info = "The username contains characters that are not " \
+                     "alphanumeric or a space. "
+        return False, error_info
     if username[0] == ' ':
         return False, "The username cannot contain a space as its prefix."
     if username[len(username)-1] == ' ':
