@@ -25,11 +25,11 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(128))
-    billing_address = db.Column(db.String(120), nullable=True)
-    postal_code = db.Column(db.String(7), nullable=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String)
+    billing_address = db.Column(db.String, nullable=True)
+    postal_code = db.Column(db.String, nullable=True)
     balance = db.Column(db.Integer, nullable=False)
     listings = db.relationship('Listing', backref='user')
     reviews = db.relationship('Review', backref='user')
@@ -58,11 +58,11 @@ class Listing(db.Model):
     __tablename__ = 'listings'
 
     listing_id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False)
-    description = db.Column(db.String(500))
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
     price = db.Column(db.Integer)
     last_modified_date = db.Column(db.DateTime)
-    address = db.Column(db.String(200), unique=True)
+    address = db.Column(db.String, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     # 'user' property defined in User.listings via backref
     price = db.Column(db.Integer)
@@ -98,7 +98,7 @@ class Review(db.Model):
     review_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     # 'user' property defined in User.listings via backref
-    text = db.Column(db.String(2000), nullable=False)
+    text = db.Column(db.String, nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
