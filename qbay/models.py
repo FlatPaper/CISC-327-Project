@@ -1,6 +1,8 @@
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 import datetime
 import enum
 
@@ -24,14 +26,18 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
-    billing_address = db.Column(db.String(120), nullable=False)
-    postal_code = db.Column(db.String(7), nullable=False)
+    password = db.Column(db.String(128))
+    billing_address = db.Column(db.String(120), nullable=True)
+    postal_code = db.Column(db.String(7), nullable=True)
     balance = db.Column(db.Integer, nullable=False)
-    listings = db.relationship('Listing')
-    reviews = db.relationship('Review')
-    bookings = db.relationship('Booking')
+    listings = db.relationship('Listing', backref='user')
+    reviews = db.relationship('Review', backref='user')
+    bookings = db.relationship('Booking', backref='user')
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
 
 
 class Listing(db.Model):
@@ -59,9 +65,13 @@ class Listing(db.Model):
     last_modified_date = db.Column(db.DateTime)
     address = db.Column(db.String(200), unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    # 'user' property defined in User.listings via backref
     price = db.Column(db.Integer)
-    reviews = db.relationship('Review')
-    bookings = db.relationship('Booking')
+    reviews = db.relationship('Review', backref='listing')
+    bookings = db.relationship('Booking', backref='listing')
+
+    def __repr__(self):
+        return '<Listing {}>'.format(self.listing_id)
 
 
 class ReviewStarsEnum(enum.IntEnum):
@@ -87,12 +97,16 @@ class Review(db.Model):
     __tablename__ = 'reviews'
 
     review_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'),
-                        nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    # 'user' property defined in User.listings via backref
     text = db.Column(db.String(2000), nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
-    listing = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
+    listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
+    # 'listing' property defined in Listing.reviews via backref
+
+    def __repr__(self):
+        return '<Review {}>'.format(self.review_id)
 
 
 class Booking(db.Model):
@@ -112,9 +126,15 @@ class Booking(db.Model):
 
     booking_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    listing_id = db.Column(db.Integer, db.ForeignKey('reviews.review_id'))
+    # 'user' property defined in User.listings via backref
+    listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
+    # 'listing' property defined in Listings.bookings via backref
     price = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
+    def __repr__(self):
+        return '<Booking {}>'.format(self.booking_id)
+
 
 db.create_all()
+
