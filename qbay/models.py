@@ -177,7 +177,7 @@ def register(username: str, email: str, password: str):
         return False, error_info
     if username[0] == ' ':
         return False, "The username cannot contain a space as its prefix."
-    if username[len(username)-1] == ' ':
+    if username[len(username) - 1] == ' ':
         return False, "The username cannot contain a space as its suffix."
 
     # Check if email has been used
