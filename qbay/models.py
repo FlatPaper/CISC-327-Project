@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 import datetime
 import enum
+import re
 
 
 db = SQLAlchemy(app)
@@ -138,3 +139,61 @@ class Booking(db.Model):
 
 db.create_all()
 
+EMAIL_REGEX = re.compile(r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=^_`{|}~-]+)*"
+                         r"|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]"
+                         r"|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")"
+                         r"@"
+                         r"(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+                         r"|\[(?:(?:(2(5[0-5]|[0-4][0-9])"
+                         r"|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])"
+                         r"|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:"
+                         r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]"
+                         r"|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])")
+
+
+def register(username: str, email: str, password: str):
+    # Check for empty email and password fields
+    if len(email) == 0:
+        return False, "Email cannot be empty."
+    if len(password) == 0:
+        return False, "Password cannot be empty."
+
+    # Check that email matches RFC 5322 constraints with a very long regex
+    if not EMAIL_REGEX.match(email):
+        return False, "Email does not follow addr-spec defined in RFC 5322/"
+
+    # Check for password complexity constraints
+    if len(password) < 6:
+        return False, "Password is too short."
+    if not any(ch.isupper() for ch in password):
+        return False, "The password does not contain any uppercase characters."
+    if not any(ch.islower() for ch in password):
+        return False, "The password does not contain any lowercase characters."
+    if not any(not ch.isalnum() for ch in password):
+        return False, "The password does not contain any special characters."
+
+    # Check for username constraints
+    if len(username) == 0:
+        return False, "The username is empty."
+    if len(username) <= 2 or len(username) >= 20:
+        return False, "The username must be longer than 2 characters and shorter than 20 characters."
+    if not all(ch.isalnum() or ch.isspace() for ch in username):
+        return False, "The username contains characters that are not alphanumeric or a space."
+    if username[0] == ' ':
+        return False, "The username cannot contain a space as its prefix."
+    if username[len(username)-1] == ' ':
+        return False, "The username cannot contain a space as its suffix."
+
+    # Check if email has been used
+    email_query = User.query.filter_by(email=email).all()
+    if len(email_query) > 0:
+        return False, "This email has been used already."
+
+    user = User(username=username, email=email, password=password,
+                balance=100)
+
+    db.session.add(user)
+
+    db.session.commit()
+
+    return True, "User has been created!"
