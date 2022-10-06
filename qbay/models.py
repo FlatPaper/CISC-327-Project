@@ -173,17 +173,7 @@ def validate_password(password: str):
     return True, "Password meets the constraints."
 
 
-def register(username: str, email: str, password: str):
-    # Validate the email constraints
-    flag, msg = validate_email(email)
-    if flag is False:
-        return flag, msg
-
-    # Validate the password constraints
-    flag, msg = validate_password(password)
-    if flag is False:
-        return flag, msg
-
+def validate_username(username: str):
     # Check for username constraints
     if len(username) == 0:
         return False, "The username is empty."
@@ -199,6 +189,25 @@ def register(username: str, email: str, password: str):
         return False, "The username cannot contain a space as its prefix."
     if username[len(username) - 1] == ' ':
         return False, "The username cannot contain a space as its suffix."
+
+    return True, "Username meets the constraints."
+
+
+def register(username: str, email: str, password: str):
+    # Validate the email constraints
+    flag, msg = validate_email(email)
+    if flag is False:
+        return flag, msg
+
+    # Validate the password constraints
+    flag, msg = validate_password(password)
+    if flag is False:
+        return flag, msg
+
+    # Check for username constraints
+    flag, msg = validate_username(username)
+    if flag is False:
+        return flag, msg
 
     # Check if email has been used
     email_query = User.query.filter_by(email=email).all()
