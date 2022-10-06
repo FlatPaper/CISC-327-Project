@@ -292,6 +292,7 @@ def update_listing(listing_id: int, title = None, description = None, price = No
     """
     listing = Listing.query.get(listing_id)
 
+    #Each None ensures that if an input variable is missing, it does not change.
     if title is not None:
         # Validate title constraints
         flag, msg = validate_title(title)
@@ -311,11 +312,12 @@ def update_listing(listing_id: int, title = None, description = None, price = No
             return flag, msg
 
     if address is not None:
-        # Validate description constraints
+        # Validate address constraints
         flag, msg = validate_address(address)
         if flag is False:
             return flag, msg
 
+    # Validate date constraints
     flag, msg = validate_date(date.today())
     if flag is False:
         return flag, msg
