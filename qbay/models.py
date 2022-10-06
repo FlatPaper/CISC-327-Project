@@ -242,3 +242,44 @@ def login(email: str, password: str):
         return None, "There are more than one accounts with this email!"
 
     return match_accounts[0], "This account exists."
+
+
+def create_listing(title:str,description:str,price:int,address:str,user:int):
+    #The title of the product has to be alphanumeric-only
+    if all(x.isalnum() or x.isspace() for x in title):
+        # and space allowed only if it is not as prefix and suffix.
+        if title[0] == " " or title[-1] == " ":
+            return False
+        #The title of the product is no longer than 80 characters.
+        if len(title) > 80:
+            return False
+        #The description  a minimum length of 20  and a maximum of 2000.
+        if len(description < 20) or len(description) > 2000:
+            return False
+        #Description has to be longer than the product's title.
+        if len(description) < len(title):
+            return False
+        #Price has to be of range [10, 10000].
+        if price < 10 or price > 10000:
+            return False
+        #last_modified_date must be after 2021-01-02 and before 2025-01-02.
+        date = date.today()
+        #The owner of the corresponding product must exist in the database.
+        if User.query.get(user) == None:
+            return False
+        #owner_email cannot be empty.
+        if User.query.get(user).email == None:
+            return False
+        #A user cannot create products that have the same title
+        l = User.query.get(user).listings
+        for i in l:
+            if i.title == title:
+                return False
+        
+        db.session.add(Listing(title = title,description = description,
+                               price=price, last_modified_date = date,
+                               address=address,user_id=user,))
+        db.session.commit
+        return True
+    else:
+        return False
