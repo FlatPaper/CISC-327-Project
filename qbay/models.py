@@ -62,7 +62,7 @@ class Listing(db.Model):
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     last_modified_date = db.Column(db.DateTime)
-    address = db.Column(db.String, unique=True)
+    address = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     user_email = db.Column(db.String)
     # 'user' property defined in User.listings via backref
@@ -247,7 +247,7 @@ def login(email: str, password: str):
 
 def create_listing(title: str, description: str, price: int,
                    address: str, user_id: int):
-    if any(not x.isalnum() or not x.isspace() for x in title):
+    if not all(x.isalnum() or x.isspace() for x in title):
         return False, "The title of the listing must be alphanumeric."
     if title[0] == " " or title[-1] == " ":
         return False, "Space is allowed if it's not a prefix or suffix."
@@ -280,4 +280,4 @@ def create_listing(title: str, description: str, price: int,
 
     db.session.commit()
 
-    return True
+    return True, "Listing was created!"

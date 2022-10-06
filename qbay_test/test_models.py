@@ -2,6 +2,7 @@ from qbay.models import register, login, create_listing
 from qbay.models import User, Listing
 import datetime
 
+
 def test_r1_1_user_register():
     """
     When creating a user, check that the email field and password field
@@ -345,26 +346,23 @@ def test_r4_1_create_listing():
     """
     test that listing title is alphanumeric with spaces for create listing
     """
+
     # Normal Case
     assert create_listing("nice cabin on 123 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
-    # Empty case
-    assert create_listing("",
+                          150, "123 street", 1)[0] is True
+    # prefix case
+    assert create_listing(" test",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
-    # Non alphanumeric at start
+                          150, "123 street", 1)[0] is False
+    # suffix case
+    assert create_listing("test ",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+    # Non-alphanumeric
     assert create_listing("!nice cabin on 124 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is False
-    # Non alphanumeric at end
-    assert create_listing("nice cabin on 125 street!",
-                          "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is False
-    # Non alphanumeric in the middle
-    assert create_listing("nice cabin !on 126 street",
-                          "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is False
+                          150, "123 street", 1)[0] is False
 
 
 def test_r4_2_create_listing():
@@ -374,32 +372,30 @@ def test_r4_2_create_listing():
     # less than 80
     assert create_listing("nice cabin on 127 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
+                          150, "123 street", 1)[0] is True
     # more than 80
-    assert create_listing("""This is longer than 80 chracters, this is longer 
-                          than 80 charcaters, this is longer than 80 charcaters, 
-                          this is longer than 80 charcaters""",
+    test_str = "a" * 90
+    assert create_listing(test_str,
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is False
+                          150, "123 street", 1)[0] is False
 
 
 def test_r4_3_create_listing():
     """
-    test that descritpion is between 20-20000 chracters for create listing
+    test that description is between 20-20000 characters for create listing
     """
     # between 20-2000
     assert create_listing("nice cabin on 129 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
+                          150, "123 street", 1)[0] is True
     # less than 20
-    assert create_listing("n", "ab", 150, "123 street", 1) is False
-    f = open("two thousand.txt", "r")
-    charcter_lim = f.read()
-    f.close()
+    assert create_listing("n", "ab", 150, "123 street", 1)[0] is False
+
+    long_desc = "a" * 3000
     # more than 2000
     assert create_listing("nice cabin on 131 street",
-                          charcter_lim, 150, "123 street", 1) is False
-    
+                          long_desc, 150, "123 street", 1)[0] is False
+
 
 def test_r4_4_create_listing():
     """
@@ -408,11 +404,11 @@ def test_r4_4_create_listing():
     # longer than title
     assert create_listing("nice cabin on 132 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
+                          150, "123 street", 1)[0] is True
     # shorter than title
     assert create_listing("nice cabin on 133 street",
                           "a waterfront cabin",
-                          150, "123 street", 1) is False
+                          150, "123 street", 1)[0] is False
 
 
 def test_r4_5_create_listing():
@@ -422,41 +418,40 @@ def test_r4_5_create_listing():
     # price in range 10-10000
     assert create_listing("nice cabin on 134 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
+                          150, "123 street", 1)[0] is True
     # price less than 10
     assert create_listing("nice cabin on 135 street",
                           "a waterfront cabin located in downtown real city",
-                          2, "123 street", 1) is False
+                          2, "123 street", 1)[0] is False
     # price more than 10000
     assert create_listing("nice cabin on 136 street",
                           "a waterfront cabin located in downtown real city",
-                          200000, "123 street", 1) is False
+                          200000, "123 street", 1)[0] is False
 
 
 def test_r4_6_create_listing():
     """
     test that date is between 2021-01-02 and 2025-01-02
-    Date is auto made for todays date which is between these dates
+    Date is auto made for today's date which is between these dates
     """
-    assert (Listing.query.get(1).last_modified_date < 
-            datetime.datetime(2025, 1, 2) and 
-            Listing.query.get(1).last_modified_date > 
+    assert (datetime.datetime(2025, 1, 2) >
+            Listing.query.get(1).last_modified_date >
             datetime.datetime(2021, 1, 2)) is True
 
 
 def test_r4_7_create_listing():
     """
-    Test that user exists in data base, the user must have a email.
+    Test that user exists in database, the user must have a email.
     The second is already guaranteed as it is required to register
     """
     # user in data base
     assert create_listing("nice cabin on 137 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
+                          150, "123 street", 1)[0] is True
     # user not in database
     assert create_listing("nice cabin on 138 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 10000000000000) is False
+                          150, "123 street", 10000000000000)[0] is False
 
 
 def test_r4_8_create_listing():
@@ -466,8 +461,8 @@ def test_r4_8_create_listing():
     # user does not have one of the same title
     assert create_listing("nice cabin on 139 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is True
+                          150, "123 street", 1)[0] is True
     # user does have one of the same title
     assert create_listing("nice cabin on 139 street",
                           "a waterfront cabin located in downtown real city",
-                          150, "123 street", 1) is False
+                          150, "123 street", 1)[0] is False
