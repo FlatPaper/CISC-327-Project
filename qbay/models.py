@@ -42,7 +42,6 @@ class User(db.Model):
 class Listing(db.Model):
     """
     An Object to Express a property listing.\n
-
     Properties:\n
     listing_id: The integer ID for the listing\n
     title: title of the listing
@@ -84,7 +83,6 @@ class ReviewStarsEnum(enum.IntEnum):
 class Review(db.Model):
     """
     A review model such that Users can leave reviews on listings.
-
     review_id: id for the review model, the primary_key
     user_id: the id of the user posting this review
     text: the text of the review
@@ -111,9 +109,7 @@ class Booking(db.Model):
     """
         A Booking object represents a booking to rent a
         property listing.
-
         Includes the following properties:
-
         booking_id: Booking ID
         user_id: Numeric ID of the user renting the property
         listing_id: ID of the listing trying to be booked
@@ -242,3 +238,88 @@ def login(email: str, password: str):
         return None, "There are more than one accounts with this email!"
 
     return match_accounts[0], "This account exists."
+
+def validate_title(title: str):
+    if not title.isalnum():
+        return False, "Title of the product must be alphanumeric, and spaces are allowed only if they are neither prefix nor suffix."
+    
+    if (len(title) > 80):
+        return False, "Title of the product must be 80 characters or less."
+
+    if (title != title.strip()):
+        return False, "Spaces as prefixes and suffixes are not allowed."
+
+    return True, "Title meets constraints."
+
+def validate_description(description: str):
+    if (len(description) < 20 and len(description) > 2000):
+        return False, "Description of the listing must be between 20 and 2000 characters."
+
+    if (len(description) < len(title)):
+        return False, "Description of the listing must be longer than the title."
+
+    return True, "Description meets constraints."
+
+def validate_price(price: int):
+    if (price < 10 and price > 1000):
+        return False, "Price must be between 10 and 1000."
+
+    if (price <= listing.price):
+        return False, "New price must be greater than the previous price."
+
+    return True, "Price meets constraints."
+
+def validate_address(address: str):
+    if not address.isalnum():
+        return False, "Address must be alphanumeric."
+    
+    return True, "Address meets constraints."
+
+def validate_date(date: datetime):
+    low = date(2021, 1, 2)
+    high = date(2025, 1, 2)
+    if (date < low and date > high):
+        return False, "New date must be after 2021-01-02 and before 2025-01-02."
+    
+    return True, "Date was modified."
+
+def update_listing(listing_id: int, title = None, description = None, price = None, address = None):
+    """
+        This function updates the attributes of the posted listing.
+        If any of the inputs are not given, then automatically assigns them None and updates the
+        remaining attributes.
+        If none are given, no attributes are updated.
+    """
+    listing = Listing.query.get(listing_id)
+
+    #Each None ensures that if an input variable is missing, it does not change.
+    if title is not None:
+        # Validate title constraints
+        flag, msg = validate_title(title)
+        if flag is False:
+            return flag, msg
+
+    if description is not None:
+        # Validate description constraints
+        flag, msg = validate_description(description)
+        if flag is False:
+            return flag, msg
+    
+    if price is not None:
+        # Validate price constraints
+        flag, msg = validate_price(price)
+        if flag is False:
+            return flag, msg
+
+    if address is not None:
+        # Validate address constraints
+        flag, msg = validate_address(address)
+        if flag is False:
+            return flag, msg
+
+    # Validate date constraints
+    flag, msg = validate_date(date.today())
+    if flag is False:
+        return flag, msg
+
+    return True, "Listing has been updated."
