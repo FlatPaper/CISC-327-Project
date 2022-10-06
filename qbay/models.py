@@ -1,7 +1,7 @@
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 
-import datetime
+from datetime import datetime
 import enum
 import re
 
@@ -62,8 +62,9 @@ class Listing(db.Model):
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     last_modified_date = db.Column(db.DateTime)
-    address = db.Column(db.String, unique=True)
+    address = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_email = db.Column(db.String)
     # 'user' property defined in User.listings via backref
     reviews = db.relationship('Review', backref='listing')
     bookings = db.relationship('Booking', backref='listing')
@@ -99,7 +100,7 @@ class Review(db.Model):
     # 'user' property defined in User.listings via backref
     text = db.Column(db.String, nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    date = db.Column(db.DateTime)
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
     # 'listing' property defined in Listing.reviews via backref
 
@@ -128,7 +129,7 @@ class Booking(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
     # 'listing' property defined in Listings.bookings via backref
     price = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    date = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<Booking {}>'.format(self.booking_id)
@@ -242,3 +243,41 @@ def login(email: str, password: str):
         return None, "There are more than one accounts with this email!"
 
     return match_accounts[0], "This account exists."
+
+
+def create_listing(title: str, description: str, price: int,
+                   address: str, user_id: int):
+    if not all(x.isalnum() or x.isspace() for x in title):
+        return False, "The title of the listing must be alphanumeric."
+    if title[0] == " " or title[-1] == " ":
+        return False, "Space is allowed if it's not a prefix or suffix."
+    if len(title) > 80:
+        return False, "Length of title must be 80 or less characters."
+    if len(description) < 20 or len(description) > 2000:
+        return False, "Description length must be between 20-2000 characters."
+    if len(description) <= len(title):
+        return False, "Description length must be longer than the title."
+    if price < 10 or price > 10000:
+        return False, "Price must be between [10, 10000]."
+
+    date = datetime.today()
+
+    user = User.query.get(user_id)
+    if user is None:
+        return False, "User id does not exist!"
+    user_email = user.email
+
+    listings = User.query.get(user_id).listings
+    if any(title == product.title for product in listings):
+        return False, "Listings cannot have the same title."
+
+    listing_obj = Listing(title=title, description=description,
+                          price=price, last_modified_date=date,
+                          address=address, user_id=user_id,
+                          user_email=user_email)
+
+    db.session.add(listing_obj)
+
+    db.session.commit()
+
+    return True, "Listing was created!"
