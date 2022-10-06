@@ -246,7 +246,7 @@ def test_r1_10_user_register():
     users: list[int, int] = User.query.order_by(User.user_id)\
         .with_entities(User.user_id, User.balance)
     assert (user_info[1] == 100 for user_info in users)
-    
+
 
 def test_r2_1_user_login():
     """
