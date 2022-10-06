@@ -360,7 +360,7 @@ def test_r4_1_create_listing():
     # Non alphanumeric at end
     assert create_listing("nice cabin on 125 street!",
                           "a waterfront cabin located in downtown real city",
-                          150 ,"123 street", 1) is False
+                          150, "123 street", 1) is False
     # Non alphanumeric in the middle
     assert create_listing("nice cabin !on 126 street",
                           "a waterfront cabin located in downtown real city",
@@ -376,7 +376,9 @@ def test_r4_2_create_listing():
                           "a waterfront cabin located in downtown real city",
                           150, "123 street", 1) is True
     # more than 80
-    assert create_listing("This is longer than 80 chracters, this is longer than 80 charcaters, this is longer than 80 charcaters, this is longer than 80 charcaters",
+    assert create_listing("""This is longer than 80 chracters, this is longer 
+                          than 80 charcaters, this is longer than 80 charcaters, 
+                          this is longer than 80 charcaters""",
                           "a waterfront cabin located in downtown real city",
                           150, "123 street", 1) is False
 
@@ -410,7 +412,7 @@ def test_r4_4_create_listing():
     # shorter than title
     assert create_listing("nice cabin on 133 street",
                           "a waterfront cabin",
-                          150 ,"123 street", 1) is False
+                          150, "123 street", 1) is False
 
 
 def test_r4_5_create_listing():
@@ -424,7 +426,7 @@ def test_r4_5_create_listing():
     # price less than 10
     assert create_listing("nice cabin on 135 street",
                           "a waterfront cabin located in downtown real city",
-                          2 ,"123 street", 1) is False
+                          2, "123 street", 1) is False
     # price more than 10000
     assert create_listing("nice cabin on 136 street",
                           "a waterfront cabin located in downtown real city",
