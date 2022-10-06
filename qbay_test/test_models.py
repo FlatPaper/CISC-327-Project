@@ -1,4 +1,4 @@
-from qbay.models import register
+from qbay.models import register, login
 from qbay.models import User
 
 
@@ -246,3 +246,96 @@ def test_r1_10_user_register():
     users: list[int, int] = User.query.order_by(User.user_id)\
         .with_entities(User.user_id, User.balance)
     assert (user_info[1] == 100 for user_info in users)
+
+
+def test_r2_1_user_login():
+    """
+    Check that a user can log into an existing account. Othewise,
+    it should return a None value.
+    """
+    # Check for logging into an existing account
+    assert register(
+        username="Login Test 1",
+        email="r2_1_1_pass@gmail.com",
+        password="G00dPassword#!"
+    )[0] is True
+    account, msg = login(
+        email="r2_1_1_pass@gmail.com",
+        password="G00dPassword#!"
+    )
+    assert account.email == "r2_1_1_pass@gmail.com" and \
+           account.password == "G00dPassword#!"
+
+    # Check for logging into a non-existing account email
+    account, msg = login(
+        email="r2_1_1_fail@gmail.com",
+        password="G00dPassword#!"
+    )
+    assert account is None
+
+    # Check for logging into an existing account with the wrong password
+    account, msg = login(
+        email="r2_1_1_pass@gmail.com",
+        password="Wr0ngPassword#!"
+    )
+    assert account is None
+
+
+def test_r2_2_user_login():
+    """
+    Check the same email/password requirements as the register function,
+    such that it stops before we reach a user query where it will return
+    None.
+    It will never return None or True if it does not reach the User query.
+    (It should only return False in these tests, not None or True).
+    """
+    # Check for blank email and password cases
+    flag, msg = login(
+        email="",
+        password="G00dPassword#!"
+    )
+    assert flag is False
+    flag, msg = login(
+        email="good_email@gmail.com",
+        password=""
+    )
+    assert flag is False
+    flag, msg = login(
+        email="",
+        password=""
+    )
+    assert flag is False
+
+    # Check for RFC 5322 validation
+    flag, msg = login(
+        email="name.Surname@...ca",
+        password="RFC_fail1_pwd"
+    )
+    assert flag is False
+    flag, msg = login(
+        email="...@gmail.com",
+        password="RFC_fail2_pwd"
+    )
+    assert flag is False
+
+    # Check for password complexity
+    flag, msg = login(
+        email="pwdTestFail1@gmail.com",
+        password="Sh0rt"
+    )  # Minimum length check
+    assert flag is False
+    flag, msg = login(
+        email="pwdTestFail2@gmail.com",
+        password="n0_upper_case"
+    )  # Maximum length check
+    assert flag is False
+    flag, msg = login(
+        email="pwdTestFail3@gmail.com",
+        password="N0_LOWER_CASE"
+    )  # Must have lower case check
+    assert flag is False
+    flag, msg = login(
+        email="pwdTestFail4@gmail.com",
+        password="NoSpecialCharacters"
+    )  # Must have a special character check
+    assert flag is False
