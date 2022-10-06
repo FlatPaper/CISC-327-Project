@@ -253,7 +253,7 @@ def create_listing(title: str, description: str, price: int,
         return False, "Space is allowed if it's not a prefix or suffix."
     if len(title) > 80:
         return False, "Length of title must be 80 or less characters."
-    if len(description < 20) or len(description > 2000):
+    if len(description) < 20 or len(description) > 2000:
         return False, "Description length must be between 20-2000 characters."
     if len(description) <= len(title):
         return False, "Description length must be longer than the title."
