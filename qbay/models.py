@@ -65,7 +65,6 @@ class Listing(db.Model):
     address = db.Column(db.String, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     # 'user' property defined in User.listings via backref
-    price = db.Column(db.Integer)
     reviews = db.relationship('Review', backref='listing')
     bookings = db.relationship('Booking', backref='listing')
 
