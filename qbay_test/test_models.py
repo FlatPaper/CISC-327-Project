@@ -339,3 +339,314 @@ def test_r2_2_user_login():
         password="NoSpecialCharacters"
     )  # Must have a special character check
     assert flag is False
+
+def test_r4_1_create_listing():
+    """
+    test that listing title is alphanumeric with spaces for create listing
+    """
+
+    # Normal Case
+    assert create_listing("nice cabin on 123 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # prefix case
+    assert create_listing(" test",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+    # suffix case
+    assert create_listing("test ",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+    # Non-alphanumeric
+    assert create_listing("!nice cabin on 124 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+
+
+def test_r4_2_create_listing():
+    """
+    test that listing title is less than 80 characters for create listing
+    """
+    # less than 80
+    assert create_listing("nice cabin on 127 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # more than 80
+    test_str = "a" * 90
+    assert create_listing(test_str,
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+
+
+def test_r4_3_create_listing():
+    """
+    test that description is between 20-20000 characters for create listing
+    """
+    # between 20-2000
+    assert create_listing("nice cabin on 129 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # less than 20
+    assert create_listing("n", "ab", 150, "123 street", 1)[0] is False
+
+    long_desc = "a" * 3000
+    # more than 2000
+    assert create_listing("nice cabin on 131 street",
+                          long_desc, 150, "123 street", 1)[0] is False
+
+
+def test_r4_4_create_listing():
+    """
+    test that listing title is shorter than description for create listing
+    """
+    # longer than title
+    assert create_listing("nice cabin on 132 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # shorter than title
+    assert create_listing("nice cabin on 133 street",
+                          "a waterfront cabin",
+                          150, "123 street", 1)[0] is False
+
+
+def test_r4_5_create_listing():
+    """
+    test that listing price is between 10-10000
+    """
+    # price in range 10-10000
+    assert create_listing("nice cabin on 134 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # price less than 10
+    assert create_listing("nice cabin on 135 street",
+                          "a waterfront cabin located in downtown real city",
+                          2, "123 street", 1)[0] is False
+    # price more than 10000
+    assert create_listing("nice cabin on 136 street",
+                          "a waterfront cabin located in downtown real city",
+                          200000, "123 street", 1)[0] is False
+
+
+def test_r4_6_create_listing():
+    """
+    test that date is between 2021-01-02 and 2025-01-02
+    Date is auto made for today's date which is between these dates
+    """
+    assert (datetime.datetime(2025, 1, 2) >
+            Listing.query.get(1).last_modified_date >
+            datetime.datetime(2021, 1, 2)) is True
+
+
+def test_r4_7_create_listing():
+    """
+    Test that user exists in database, the user must have a email.
+    The second is already guaranteed as it is required to register
+    """
+    # user in data base
+    assert create_listing("nice cabin on 137 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # user not in database
+    assert create_listing("nice cabin on 138 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 10000000000000)[0] is False
+
+
+def test_r4_8_create_listing():
+    """
+    A user cannot create products that have the same title
+    """
+    # user does not have one of the same title
+    assert create_listing("nice cabin on 139 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # user does have one of the same title
+    assert create_listing("nice cabin on 139 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+
+def test_r5_1_updating_all_attributes():
+    """
+        Update each listing attribute once to show that they can be updated
+    """
+
+    register(
+        username="Test user 1",
+        email="test_user_id_1@gmail.com",
+        password="Test_user_1_pwd")
+
+    create_listing(
+        title="Test Title",
+        description="A description",
+        price=100,
+        address="123 Street St."
+        user_id=0)
+
+    #Updates each listing attribute
+    assert update_listing(listing_id=0,
+        title="Test Title Again",
+        description="Another description",
+        price=120,
+        address="124 Street St.")
+
+def test_r5_2_update_listing_price():
+    """
+        Check that price can only be increased.
+    """
+
+    #Price is less than 10
+    assert update_listing(
+        listing_id=0,
+        price=5,
+        address="123 Street St.")
+
+    #Price between 10-1000
+    assert update_listing(
+        listing_id=0,
+        price=200,
+        address="123 Street St.")
+
+    #Pricen is more than 1000
+    assert update_listing(
+        listing_id=0,
+        price=4000,
+        address="123 Street St.")
+
+def test_r5_3_update_last_date_modified():
+    """
+        Check that the last_date_modified is less than the current date
+        to ensure that it has successfully updated.
+    """
+
+    #
+    update_listing(
+        listing_id=0,
+        price=400,
+        address="123 Street St.")
+
+    assert(date.today() != listing.query.get(0).last_modified_date)
+
+def test_r5_4_1_update_listing():
+    """
+    test that listing title is alphanumeric with spaces for create listing
+    """
+
+    # Normal Case
+    assert update_listing("nice cabin on 123 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # prefix case
+    assert update_listing(" test",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+    # suffix case
+    assert update_listing("test ",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+    # Non-alphanumeric
+    assert update_listing("!nice cabin on 124 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+
+
+def test_r5_4_2_update_listing():
+    """
+    test that listing title is less than 80 characters for create listing
+    """
+    # less than 80
+    assert update_listing("nice cabin on 127 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # more than 80
+    test_str = "a" * 90
+    assert update_listing(test_str,
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
+
+
+def test_r5_4_3_update_listing():
+    """
+    test that description is between 20-20000 characters for create listing
+    """
+    # between 20-2000
+    assert update_listing("nice cabin on 129 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # less than 20
+    assert update_listing("n", "ab", 150, "123 street", 1)[0] is False
+
+    long_desc = "a" * 3000
+    # more than 2000
+    assert update_listing("nice cabin on 131 street",
+                          long_desc, 150, "123 street", 1)[0] is False
+
+
+def test_r5_4_4_update_listing():
+    """
+    test that listing title is shorter than description for create listing
+    """
+    # longer than title
+    assert update_listing("nice cabin on 132 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # shorter than title
+    assert update_listing("nice cabin on 133 street",
+                          "a waterfront cabin",
+                          150, "123 street", 1)[0] is False
+
+
+def test_r5_4_5_update_listing():
+    """
+    test that listing price is between 10-10000
+    """
+    # price in range 10-10000
+    assert update_listing("nice cabin on 134 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # price less than 10
+    assert update_listing("nice cabin on 135 street",
+                          "a waterfront cabin located in downtown real city",
+                          2, "123 street", 1)[0] is False
+    # price more than 10000
+    assert update_listing("nice cabin on 136 street",
+                          "a waterfront cabin located in downtown real city",
+                          200000, "123 street", 1)[0] is False
+
+
+def test_r5_4_6_update_listing():
+    """
+    test that date is between 2021-01-02 and 2025-01-02
+    Date is auto made for today's date which is between these dates
+    """
+    assert (datetime.datetime(2025, 1, 2) >
+            Listing.query.get(0).last_modified_date >
+            datetime.datetime(2021, 1, 2)) is True
+
+
+def test_r5_4_7_update_listing():
+    """
+    Test that user exists in database, the user must have a email.
+    The second is already guaranteed as it is required to register
+    """
+    # user in data base
+    assert update_listing("nice cabin on 137 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # user not in database
+    assert update_listing("nice cabin on 138 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 10000000000000)[0] is False
+
+
+def test_r5_4_8_update_listing():
+    """
+    A user cannot create products that have the same title
+    """
+    # user does not have one of the same title
+    assert update_listing("nice cabin on 139 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is True
+    # user does have one of the same title
+    assert update_listing("nice cabin on 139 street",
+                          "a waterfront cabin located in downtown real city",
+                          150, "123 street", 1)[0] is False
