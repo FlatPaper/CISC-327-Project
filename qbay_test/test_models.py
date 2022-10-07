@@ -1,6 +1,6 @@
-from qbay.models import register, login, create_listing
-from qbay.models import User, Listing
-import datetime
+from qbay.models import register, login
+from qbay.models import User
+from qbay.models import create_listing
 
 
 def test_r1_1_user_register():
@@ -341,7 +341,6 @@ def test_r2_2_user_login():
     )  # Must have a special character check
     assert flag is False
 
-
 def test_r4_1_create_listing():
     """
     test that listing title is alphanumeric with spaces for create listing
@@ -467,7 +466,6 @@ def test_r4_8_create_listing():
                           "a waterfront cabin located in downtown real city",
                           150, "123 street", 1)[0] is False
 
-
 def test_r5_1_updating_all_attributes():
     """
         Update each listing attribute once to show that they can be updated
@@ -480,15 +478,15 @@ def test_r5_1_updating_all_attributes():
 
     create_listing(
         title="Test Title",
-        description="A description",
+        description="A description that is long",
         price=100,
-        address="123 Street St."
+        address="123 Street St.",
         user_id=0)
 
     #Updates each listing attribute
     assert update_listing(listing_id=0,
         title="Test Title Again",
-        description="Another description",
+        description="Another description that is longer",
         price=120,
         address="124 Street St.")
 
@@ -509,7 +507,7 @@ def test_r5_2_update_listing_price():
         price=200,
         address="123 Street St.")
 
-    #Pricen is more than 1000
+    #Price is more than 1000
     assert update_listing(
         listing_id=0,
         price=4000,
@@ -521,7 +519,6 @@ def test_r5_3_update_last_date_modified():
         to ensure that it has successfully updated.
     """
 
-    #
     update_listing(
         listing_id=0,
         price=400,
@@ -531,7 +528,7 @@ def test_r5_3_update_last_date_modified():
 
 def test_r5_4_1_update_listing():
     """
-    test that listing title is alphanumeric with spaces for create listing
+    test that listing title is alphanumeric with spaces for update listing.
     """
 
     # Normal Case
@@ -554,7 +551,7 @@ def test_r5_4_1_update_listing():
 
 def test_r5_4_2_update_listing():
     """
-    test that listing title is less than 80 characters for create listing
+    test that listing title is less than 80 characters for update listing.
     """
     # less than 80
     assert update_listing("nice cabin on 127 street",
@@ -569,7 +566,7 @@ def test_r5_4_2_update_listing():
 
 def test_r5_4_3_update_listing():
     """
-    test that description is between 20-20000 characters for create listing
+    test that description is between 20-20000 characters for update listing.
     """
     # between 20-2000
     assert update_listing("nice cabin on 129 street",
@@ -586,7 +583,7 @@ def test_r5_4_3_update_listing():
 
 def test_r5_4_4_update_listing():
     """
-    test that listing title is shorter than description for create listing
+    test that listing title is shorter than description for update listing.
     """
     # longer than title
     assert update_listing("nice cabin on 132 street",
@@ -619,7 +616,7 @@ def test_r5_4_5_update_listing():
 def test_r5_4_6_update_listing():
     """
     test that date is between 2021-01-02 and 2025-01-02
-    Date is auto made for today's date which is between these dates
+    Date is auto made for today's date which is between these dates.
     """
     assert (datetime.datetime(2025, 1, 2) >
             Listing.query.get(0).last_modified_date >
@@ -629,7 +626,7 @@ def test_r5_4_6_update_listing():
 def test_r5_4_7_update_listing():
     """
     Test that user exists in database, the user must have a email.
-    The second is already guaranteed as it is required to register
+    The second is already guaranteed as it is required to register.
     """
     # user in data base
     assert update_listing("nice cabin on 137 street",
@@ -643,7 +640,7 @@ def test_r5_4_7_update_listing():
 
 def test_r5_4_8_update_listing():
     """
-    A user cannot create products that have the same title
+    A user cannot create products that have the same title.
     """
     # user does not have one of the same title
     assert update_listing("nice cabin on 139 street",
