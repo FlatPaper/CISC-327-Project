@@ -571,19 +571,15 @@ def test_r5_3_update_last_date_modified():
     listing_test_after: Listing = Listing.query.filter_by(
         title="Test Title R5 3").all()[0]
 
-    assert (
-            datetime.today().year == listing_test_after.last_modified_date.year
-            and
-            datetime.today().month == listing_test_after.
-            last_modified_date.month
-            and
-            datetime.today().day == listing_test_after.last_modified_date.day
-            and
-            datetime.today().hour == listing_test_after.last_modified_date.hour
-            and
-            datetime.today().minute == listing_test_after.
-            last_modified_date.minute
-    )
+    assert (datetime.today().year == listing_test_after.last_modified_date.year
+            and datetime.today().month ==
+            listing_test_after.last_modified_date.month
+            and datetime.today().day ==
+            listing_test_after.last_modified_date.day
+            and datetime.today().hour ==
+            listing_test_after.last_modified_date.hour
+            and datetime.today().minute ==
+            listing_test_after.last_modified_date.minute)
 
 
 def test_r5_4_1_update_listing():
