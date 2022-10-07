@@ -358,12 +358,11 @@ def test_r3_1_update_user_profile():
     user = User.query.filter_by(email="r3_1_test@gmail.com").all()[0]
 
     # Check update function works correctly
-    assert update_user_profile(
-                        user.user_id,
-                        username="updated user",
-                        email="updated@gmail.com",
-                        billing_address="321 updated dr",
-                        postal_code="L9R0T9")[0] is True
+    assert update_user_profile(user.user_id,
+                               username="updated user",
+                               email="updated@gmail.com",
+                               billing_address="321 updated dr",
+                               postal_code="L9R0T9")[0] is True
 
     user = User.query.filter_by(email="updated@gmail.com").all()[0]
     assert (user.username == "updated user" and
@@ -379,21 +378,21 @@ def test_r3_2_update_user_profile():
     user = User.query.filter_by(email="updated@gmail.com").all()[0]
 
     assert update_user_profile(
-                            user.user_id,
-                            postal_code="123456")[0] is False
+        user.user_id,
+        postal_code="123456")[0] is False
 
     assert update_user_profile(
-                            user.user_id,
-                            postal_code="ABCDEF")[0] is False
+        user.user_id,
+        postal_code="ABCDEF")[0] is False
 
     assert update_user_profile(
-                            user.user_id,
-                            postal_code="@#$%^&")[0] is False
+        user.user_id,
+        postal_code="@#$%^&")[0] is False
 
     # Check valid postal code
     assert update_user_profile(
-                            user.user_id,
-                            postal_code="K7T9Y2")[0] is True
+        user.user_id,
+        postal_code="K7T9Y2")[0] is True
 
 
 def test_r3_3_update_user_profile():
@@ -406,13 +405,13 @@ def test_r3_3_update_user_profile():
 
     # Check wrongly formatted postal code
     assert update_user_profile(
-                            user.user_id,
-                            postal_code="7T0P8W")[0] is False
+        user.user_id,
+        postal_code="7T0P8W")[0] is False
 
     # Check valid Canadian postal code
     assert update_user_profile(
-                            user.user_id,
-                            postal_code="K7W0T9")[0] is True
+        user.user_id,
+        postal_code="K7W0T9")[0] is True
 
 
 def test_r3_4_update_user_profile():
