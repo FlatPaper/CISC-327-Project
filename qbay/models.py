@@ -188,6 +188,55 @@ def validate_username(username: str):
     return True, "Username meets the constraints."
 
 
+def validate_title(title: str):
+    if not title.isalnum():
+        return False, "Title of the product must be alphanumeric."
+
+    if len(title) > 80:
+        return False, "Title of the product must be 80 characters or less."
+
+    if title != title.strip():
+        return False, "Spaces as prefixes and suffixes are not allowed."
+
+    return True, "Title meets constraints."
+
+
+def validate_description(description: str, title: str):
+    if 20 > len(description) > 2000:
+        return False, "Description length must be between 20-2000 characters."
+
+    if len(description) <= len(title):
+        return False, "Description must be longer than the title."
+
+    return True, "Description meets constraints."
+
+
+def validate_price(price: int, listing):
+    if 10 > price > 1000:
+        return False, "Price must be between 10 and 1000."
+
+    if price <= listing.price:
+        return False, "New price must be greater than the previous price."
+
+    return True, "Price meets constraints."
+
+
+def validate_address(address: str):
+    if not address.isalnum():
+        return False, "Address must be alphanumeric."
+
+    return True, "Address meets constraints."
+
+
+def validate_date(date: datetime):
+    low = date(2021, 1, 2)
+    high = date(2025, 1, 2)
+    if low > date > high:
+        return False, "New date must be between 2021-01-02 and 2025-01-02."
+
+    return True, "Date was modified."
+
+
 def register(username: str, email: str, password: str):
     # Validate the email constraints
     flag, msg = validate_email(email)
@@ -242,16 +291,15 @@ def login(email: str, password: str):
 
 def create_listing(title: str, description: str, price: int,
                    address: str, user_id: int):
-    if any(not x.isalnum() or not x.isspace() for x in title):
-        return False, "The title of the listing must be alphanumeric."
-    if title[0] == " " or title[-1] == " ":
-        return False, "Space is allowed if it's not a prefix or suffix."
-    if len(title) > 80:
-        return False, "Length of title must be 80 or less characters."
-    if len(description < 20) or len(description > 2000):
-        return False, "Description length must be between 20-2000 characters."
-    if len(description) <= len(title):
-        return False, "Description length must be longer than the title."
+    # Check title validation
+    flag, msg = validate_title(title)
+    if flag is False:
+        return flag, msg
+    # Check description validation
+    flag, msg = validate_description(description)
+    if flag is False:
+        return flag, msg
+
     if price < 10 or price > 10000:
         return False, "Price must be between [10, 10000]."
 
@@ -276,55 +324,6 @@ def create_listing(title: str, description: str, price: int,
     db.session.commit()
 
     return True
-
-
-def validate_title(title: str):
-    if not title.isalnum():
-        return False, "Title of the product must be alphanumeric."
-
-    if len(title) > 80:
-        return False, "Title of the product must be 80 characters or less."
-
-    if title != title.strip():
-        return False, "Spaces as prefixes and suffixes are not allowed."
-
-    return True, "Title meets constraints."
-
-
-def validate_description(description: str, title: str):
-    if 20 > len(description) > 2000:
-        return False, "Description length must be between 20-2000 characters."
-
-    if len(description) < len(title):
-        return False, "Description must be longer than the title."
-
-    return True, "Description meets constraints."
-
-
-def validate_price(price: int, listing):
-    if 10 > price > 1000:
-        return False, "Price must be between 10 and 1000."
-
-    if price <= listing.price:
-        return False, "New price must be greater than the previous price."
-
-    return True, "Price meets constraints."
-
-
-def validate_address(address: str):
-    if not address.isalnum():
-        return False, "Address must be alphanumeric."
-
-    return True, "Address meets constraints."
-
-
-def validate_date(date: datetime):
-    low = date(2021, 1, 2)
-    high = date(2025, 1, 2)
-    if low > date > high:
-        return False, "New date must be between 2021-01-02 and 2025-01-02."
-
-    return True, "Date was modified."
 
 
 def update_listing(listing_id: int, title=None,
