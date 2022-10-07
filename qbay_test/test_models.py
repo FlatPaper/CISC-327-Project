@@ -1,4 +1,5 @@
-from qbay.models import register, login, update_user_profile, create_listing
+from qbay.models import register, login, update_user_profile
+from qbay.models import create_listing, update_listing
 from qbay.models import User, Listing
 
 from datetime import datetime
