@@ -356,7 +356,7 @@ def test_r3_1_update_user_profile():
                         user.user_id,
                         username="updated user",
                         email="updated@gmail.com",
-                        billing_adress="321 updated dr",
+                        billing_address="321 updated dr",
                         postal_code="L9R0T9")[0] is True
 
 

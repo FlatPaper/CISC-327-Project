@@ -257,7 +257,7 @@ def login(email: str, password: str):
 
 
 def update_user_profile(user_id: int, username=None, email=None,
-                        billing_adress=None, postal_code=None):
+                        billing_address=None, postal_code=None):
 
     user = User.query.get(user_id)
 
