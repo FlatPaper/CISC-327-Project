@@ -1,4 +1,4 @@
-from qbay.models import register, login, update_user_profile, create_listing
+from qbay.models import register, login, update_user_profile, create_listing, validate_email
 from qbay.models import User, Listing
 
 import datetime
@@ -345,11 +345,16 @@ def test_r2_2_user_login():
 
 def test_r3_1_update_user_profile():
     """
-    User should only be able to update user name, email, billing address,
+    User should only be able to update username, email, billing address,
     and postal code.
     """
-    user = User(username="test user", email="test@hotmail.com",
-                billing_address="123 test st", postal_code="K7T0T5")
+    assert register(
+        username="test user r3 1",
+        email="r3_1_test@gmail.com",
+        password="G00dPassword#!"
+    )[0] is True
+
+    user = User.query.filter_by(email="r3_1_test@gmail.com").all()[0]
 
     # Check update function works correctly
     assert update_user_profile(
@@ -359,13 +364,18 @@ def test_r3_1_update_user_profile():
                         billing_address="321 updated dr",
                         postal_code="L9R0T9")[0] is True
 
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
+    assert (user.username == "updated user" and
+            user.email == "updated@gmail.com" and
+            user.billing_address == "321 updated dr" and
+            user.postal_code == "L9R0T9") is True
+
 
 def test_r3_2_update_user_profile():
     """
     Postal code should be non-empty, alphanumeric, and no special characters.
     """
-    user = User(username="test2 user", email="test2@hotmail.com",
-                billing_address="321 update st")
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
 
     assert update_user_profile(
                             user.user_id,
@@ -391,7 +401,7 @@ def test_r3_3_update_user_profile():
     where A's are a letter and 1's are a number.
     """
 
-    user = User(username="test3 user", email="test3@hotmail.com")
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
 
     # Check wrongly formatted postal code
     assert update_user_profile(
@@ -406,12 +416,12 @@ def test_r3_3_update_user_profile():
 
 def test_r3_4_update_user_profile():
     """
-    Updating user name should follow the same constraints as when registering.
+    Updating username should follow the same constraints as when registering.
     Checks for username being non-empty, alphanumeric-only, and space allowed
     as long as it's not in the prefix or suffix.
     """
 
-    user = User(username="test4 user", email="test4@hotmail.com")
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
 
     # Check for empty username
     assert update_user_profile(user.user_id,
