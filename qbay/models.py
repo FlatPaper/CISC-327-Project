@@ -222,13 +222,6 @@ def validate_price(price: int, listing):
     return True, "Price meets constraints."
 
 
-def validate_address(address: str):
-    if not address.isalnum():
-        return False, "Address must be alphanumeric."
-
-    return True, "Address meets constraints."
-
-
 def validate_date(date: datetime):
     low = datetime(2021, 1, 2)
     high = datetime(2025, 1, 2)
@@ -360,12 +353,7 @@ def update_listing(listing_id: int, title=None,
             listing.price = price
 
     if address is not None:
-        # Validate address constraints
-        flag, msg = validate_address(address)
-        if flag is False:
-            return flag, msg
-        else:
-            listing.address = address
+        listing.address = address
 
     # Validate date constraints
     flag, msg = validate_date(datetime.today())
@@ -373,5 +361,7 @@ def update_listing(listing_id: int, title=None,
         return flag, msg
     else:
         listing.last_date_modified = datetime.today()
+
+    db.session.commit()
 
     return True, "Listing has been updated."
