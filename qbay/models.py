@@ -5,7 +5,6 @@ from datetime import datetime
 import enum
 import re
 
-
 db = SQLAlchemy(app)
 
 
@@ -100,6 +99,7 @@ class Review(db.Model):
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     date = db.Column(db.DateTime)
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
+
     # 'listing' property defined in Listing.reviews via backref
 
     def __repr__(self):
@@ -138,7 +138,6 @@ EMAIL_REGEX = re.compile(r"([-!#-'*+/-9=?A-Z^-~]+(\.["
                          r"-~]))+\")@([-!#-'*+/-9=?A-Z^-~]+(\.["
                          r"-!#-'*+/-9=?A-Z^-~]+)*|\[[\t -Z^-~]*])")
 
-
 POSTAL_REGEX = re.compile(r"^[A-Z]\d[A-Z]\d[A-Z]\d$")
 
 
@@ -172,7 +171,7 @@ def validate_password(password: str):
     return True, "Password meets the constraints."
 
 
-def validate_postalcode(postal_code: str):
+def validate_postal_code(postal_code: str):
     # Check if postal code field is empty
     if len(postal_code) == 0:
         return False, "Postal code cannot be empty."
@@ -258,34 +257,44 @@ def login(email: str, password: str):
 
 def update_user_profile(user_id: int, username=None, email=None,
                         billing_address=None, postal_code=None):
+    user: User = User.query.get(user_id)
 
-    user = User.query.get(user_id)
+    update_username = False
+    update_email = False
+    update_address = False
+    update_postal_code = False
 
     if username is not None:
         # Check new username for constraints
         flag, msg = validate_username(username)
         if flag is False:
             return flag, msg
-
-        user.username = username
+        update_username = True
 
     if email is not None:
         # Validate the email constraints
         flag, msg = validate_email(email)
         if flag is False:
             return flag, msg
+        update_email = True
 
-        user.email = email
-
-    if billing_adress is not None:
-        user.billing_adress = billing_adress
+    if billing_address is not None:
+        update_address = True
 
     if postal_code is not None:
         # Validate postal code
-        flag, msg = validate_email(postal_code)
+        flag, msg = validate_postal_code(postal_code)
         if flag is False:
             return flag, msg
+        update_postal_code = True
 
+    if update_username:
+        user.username = username
+    if update_email:
+        user.email = email
+    if update_address:
+        user.billing_address = billing_address
+    if update_postal_code:
         user.postal_code = postal_code
 
     db.session.commit()
