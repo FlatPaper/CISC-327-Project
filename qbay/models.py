@@ -1,7 +1,7 @@
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 
-from datetime import datetime
+import datetime
 import enum
 import re
 
@@ -61,9 +61,8 @@ class Listing(db.Model):
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     last_modified_date = db.Column(db.DateTime)
-    address = db.Column(db.String)
+    address = db.Column(db.String, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    user_email = db.Column(db.String)
     # 'user' property defined in User.listings via backref
     reviews = db.relationship('Review', backref='listing')
     bookings = db.relationship('Booking', backref='listing')
@@ -98,7 +97,7 @@ class Review(db.Model):
     # 'user' property defined in User.listings via backref
     text = db.Column(db.String, nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
     # 'listing' property defined in Listing.reviews via backref
 
@@ -125,7 +124,7 @@ class Booking(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
     # 'listing' property defined in Listings.bookings via backref
     price = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
     def __repr__(self):
         return '<Booking {}>'.format(self.booking_id)
@@ -240,16 +239,15 @@ def login(email: str, password: str):
 
     return match_accounts[0], "This account exists."
 
-
 def create_listing(title: str, description: str, price: int,
                    address: str, user_id: int):
-    if not all(x.isalnum() or x.isspace() for x in title):
+    if any(not x.isalnum() or not x.isspace() for x in title):
         return False, "The title of the listing must be alphanumeric."
     if title[0] == " " or title[-1] == " ":
         return False, "Space is allowed if it's not a prefix or suffix."
     if len(title) > 80:
         return False, "Length of title must be 80 or less characters."
-    if len(description) < 20 or len(description) > 2000:
+    if len(description < 20) or len(description > 2000):
         return False, "Description length must be between 20-2000 characters."
     if len(description) <= len(title):
         return False, "Description length must be longer than the title."
@@ -275,9 +273,8 @@ def create_listing(title: str, description: str, price: int,
     db.session.add(listing_obj)
 
     db.session.commit()
-    
-    return True, "Listing was created!"
 
+    return True
 
 def validate_title(title: str):
     if not title.isalnum():
@@ -291,7 +288,7 @@ def validate_title(title: str):
 
     return True, "Title meets constraints."
 
-def validate_description(description: str):
+def validate_description(description: str, title: str):
     if (len(description) < 20 and len(description) > 2000):
         return False, "Description length must be between 20-2000 characters."
 
@@ -300,7 +297,7 @@ def validate_description(description: str):
 
     return True, "Description meets constraints."
 
-def validate_price(price: int):
+def validate_price(price: int, listing):
     if (price < 10 and price > 1000):
         return False, "Price must be between 10 and 1000."
 
@@ -339,28 +336,39 @@ def update_listing(listing_id: int, title = None,
         flag, msg = validate_title(title)
         if flag is False:
             return flag, msg
+        else:
+            listing.title = title
 
     if description is not None:
         # Validate description constraints
-        flag, msg = validate_description(description)
+        flag, msg = validate_description(description, listing.title)
         if flag is False:
             return flag, msg
+        else:
+            listing.description = description
     
     if price is not None:
         # Validate price constraints
-        flag, msg = validate_price(price)
+        flag, msg = validate_price(price, listing)
         if flag is False:
             return flag, msg
+        else:
+            listing.price = price
 
     if address is not None:
         # Validate address constraints
         flag, msg = validate_address(address)
         if flag is False:
             return flag, msg
+        else:
+            listing.address = address
 
     # Validate date constraints
     flag, msg = validate_date(date.today())
     if flag is False:
         return flag, msg
+    else:
+        listing.last_date_modified = date.today()
+    
 
     return True, "Listing has been updated."
