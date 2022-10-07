@@ -5,7 +5,6 @@ import datetime
 import enum
 import re
 
-
 db = SQLAlchemy(app)
 
 
@@ -99,6 +98,7 @@ class Review(db.Model):
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
+
     # 'listing' property defined in Listing.reviews via backref
 
     def __repr__(self):
@@ -239,6 +239,7 @@ def login(email: str, password: str):
 
     return match_accounts[0], "This account exists."
 
+
 def create_listing(title: str, description: str, price: int,
                    address: str, user_id: int):
     if any(not x.isalnum() or not x.isspace() for x in title):
@@ -276,52 +277,58 @@ def create_listing(title: str, description: str, price: int,
 
     return True
 
+
 def validate_title(title: str):
     if not title.isalnum():
         return False, "Title of the product must be alphanumeric."
-    
-    if (len(title) > 80):
+
+    if len(title) > 80:
         return False, "Title of the product must be 80 characters or less."
 
-    if (title != title.strip()):
+    if title != title.strip():
         return False, "Spaces as prefixes and suffixes are not allowed."
 
     return True, "Title meets constraints."
 
+
 def validate_description(description: str, title: str):
-    if (len(description) < 20 and len(description) > 2000):
+    if 20 > len(description) > 2000:
         return False, "Description length must be between 20-2000 characters."
 
-    if (len(description) < len(title)):
+    if len(description) < len(title):
         return False, "Description must be longer than the title."
 
     return True, "Description meets constraints."
 
+
 def validate_price(price: int, listing):
-    if (price < 10 and price > 1000):
+    if 10 > price > 1000:
         return False, "Price must be between 10 and 1000."
 
-    if (price <= listing.price):
+    if price <= listing.price:
         return False, "New price must be greater than the previous price."
 
     return True, "Price meets constraints."
 
+
 def validate_address(address: str):
     if not address.isalnum():
         return False, "Address must be alphanumeric."
-    
+
     return True, "Address meets constraints."
+
 
 def validate_date(date: datetime):
     low = date(2021, 1, 2)
     high = date(2025, 1, 2)
-    if (date < low and date > high):
+    if low > date > high:
         return False, "New date must be between 2021-01-02 and 2025-01-02."
-    
+
     return True, "Date was modified."
 
-def update_listing(listing_id: int, title = None,
-    description = None, price = None, address = None):
+
+def update_listing(listing_id: int, title=None,
+                   description=None, price=None, address=None):
     """
         This function updates the attributes of the posted listing.
         If any of the inputs are not given, then automatically assigns them
@@ -330,7 +337,7 @@ def update_listing(listing_id: int, title = None,
     """
     listing = Listing.query.get(listing_id)
 
-    #Each None ensures that if a missing input variable does not change.
+    # Each None ensures that if a missing input variable does not change.
     if title is not None:
         # Validate title constraints
         flag, msg = validate_title(title)
@@ -346,7 +353,7 @@ def update_listing(listing_id: int, title = None,
             return flag, msg
         else:
             listing.description = description
-    
+
     if price is not None:
         # Validate price constraints
         flag, msg = validate_price(price, listing)
@@ -364,11 +371,10 @@ def update_listing(listing_id: int, title = None,
             listing.address = address
 
     # Validate date constraints
-    flag, msg = validate_date(date.today())
+    flag, msg = validate_date(datetime.today())
     if flag is False:
         return flag, msg
     else:
-        listing.last_date_modified = date.today()
-    
+        listing.last_date_modified = datetime.today()
 
     return True, "Listing has been updated."
