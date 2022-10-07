@@ -1,6 +1,8 @@
-from qbay.models import register, login, create_listing
-from qbay.models import User, Listing
-import datetime
+from qbay.models import register, login, create_listing, update_listing, \
+    Listing
+from qbay.models import User
+
+from datetime import datetime
 
 
 def test_r1_1_user_register():
@@ -42,7 +44,7 @@ def test_r1_2_user_register():
         username="Test user 2",
         email="test_user_id_2@gmail.com",
         password="Test_user_2_pwd")
-    user_ids: list[int] = User.query.order_by(User.user_id)\
+    user_ids: list[int] = User.query.order_by(User.user_id) \
         .with_entities(User.user_id).all()
     assert len(user_ids) == len(set(user_ids))
 
@@ -189,7 +191,7 @@ def test_r1_7_user_register():
 
     # And finally, as a sanity check, scan through the database to make sure
     # all emails are unique using a set
-    user_emails: list[str] = User.query.order_by(User.email)\
+    user_emails: list[str] = User.query.order_by(User.email) \
         .with_entities(User.email).all()
     assert len(user_emails) == len(set(user_emails))
 
@@ -208,7 +210,7 @@ def test_r1_8_user_register():
 
     # Compare the list size of all users vs
     # all users that have a blank billing address
-    user_address = User.query.order_by(User.user_id)\
+    user_address = User.query.order_by(User.user_id) \
         .filter(User.billing_address.is_(None)).all()
     users = User.query.order_by(User.user_id).all()
     assert len(users) == len(user_address)
@@ -226,7 +228,7 @@ def test_r1_9_user_register():
     )[0] is True
 
     # Assert all postal codes are blank to this point
-    user_postal_codes = User.query.order_by(User.user_id)\
+    user_postal_codes = User.query.order_by(User.user_id) \
         .filter(User.postal_code.is_(None)).all()
     users = User.query.order_by(User.user_id).all()
     assert len(users) == len(user_postal_codes)
@@ -244,7 +246,7 @@ def test_r1_10_user_register():
     )[0] is True
 
     # Check all users that we've added have a starting balance of 100
-    users: list[int, int] = User.query.order_by(User.user_id)\
+    users: list[int, int] = User.query.order_by(User.user_id) \
         .with_entities(User.user_id, User.balance)
     assert (user_info[1] == 100 for user_info in users)
 
@@ -434,9 +436,9 @@ def test_r4_6_create_listing():
     test that date is between 2021-01-02 and 2025-01-02
     Date is auto made for today's date which is between these dates
     """
-    assert (datetime.datetime(2025, 1, 2) >
+    assert (datetime(2025, 1, 2) >
             Listing.query.get(1).last_modified_date >
-            datetime.datetime(2021, 1, 2)) is True
+            datetime(2021, 1, 2)) is True
 
 
 def test_r4_7_create_listing():
@@ -466,3 +468,340 @@ def test_r4_8_create_listing():
     assert create_listing("nice cabin on 139 street",
                           "a waterfront cabin located in downtown real city",
                           150, "123 street", 1)[0] is False
+
+
+def test_r5_1_updating_all_attributes():
+    """
+        Update each listing attribute once to show that they can be updated
+    """
+
+    register(
+        username="Test user 1",
+        email="test_user_id_1@gmail.com",
+        password="Test_user_1_pwd")
+
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    create_listing(
+        title="Test Title R5 1",
+        description="A description that is long",
+        price=100,
+        address="123 Street St.",
+        user_id=user_test.user_id)
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 1").all()[0]
+
+    # Updates each listing attribute
+    assert update_listing(listing_id=listing_test.listing_id,
+                          title="Test Title R5 1 1",
+                          description="Another description that is longer",
+                          price=120,
+                          address="124 Street")[0] is True
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 1 1").all()[0]
+    assert listing_test.title == "Test Title R5 1 1"
+    assert listing_test.description == "Another description that is longer"
+    assert listing_test.price == 120
+    assert listing_test.address == "124 Street"
+
+
+def test_r5_2_update_listing_price():
+    """
+        Check that price can only be increased.
+    """
+
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 2",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 2").all()[0]
+
+    # Price is less than 10
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        price=5,
+        address="123 Street St.")[0] is False
+
+    # Price between 10-1000
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        price=200,
+        address="123 Street St.")[0] is True
+
+    # Price is more than 1000
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        price=4000,
+        address="123 Street St.")[0] is False
+
+
+def test_r5_3_update_last_date_modified():
+    """
+        Check that the last_date_modified is less than the current date
+        to ensure that it has successfully updated.
+    """
+
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 3",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 3").all()[0]
+
+    update_listing(
+        listing_id=listing_test.listing_id,
+        price=400,
+        address="123 Street St.")
+
+    listing_test_after: Listing = Listing.query.filter_by(
+        title="Test Title R5 3").all()[0]
+
+    assert (datetime.today().year == listing_test_after.last_modified_date.year
+            and datetime.today().month ==
+            listing_test_after.last_modified_date.month
+            and datetime.today().day ==
+            listing_test_after.last_modified_date.day
+            and datetime.today().hour ==
+            listing_test_after.last_modified_date.hour
+            and datetime.today().minute ==
+            listing_test_after.last_modified_date.minute)
+
+
+def test_r5_4_1_update_listing():
+    """
+    test that listing title is alphanumeric with spaces for update listing.
+    """
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 4",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4").all()[0]
+
+    # Normal Case
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title="nice cabin on 123 street test")[0] is True
+
+    # prefix case
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title=" test")[0] is False
+
+    # suffix case
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title="test ")[0] is False
+
+    # Non-alphanumeric
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title="sdf#$ heh!")[0] is False
+
+
+def test_r5_4_2_update_listing():
+    """
+    test that listing title is less than 80 characters for update listing.
+    """
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 4",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4").all()[0]
+
+    # less than 80
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title="nice cabin on 127 street 2")[0] is True
+
+    # more than 80
+    test_str = "a" * 90
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title=test_str)[0] is False
+
+
+def test_r5_4_3_update_listing():
+    """
+    test that description is between 20-20000 characters for update listing.
+    """
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 4 3",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4 3").all()[0]
+
+    # between 20-2000
+    test_str = "a" * 25
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        description=test_str
+    )[0] is True
+
+    # less than 20
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        description="heh fail"
+    )[0] is False
+
+    # more than 2000
+    long_desc = "a" * 3000
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        description=long_desc
+    )[0] is False
+
+
+def test_r5_4_4_update_listing():
+    """
+    test that listing title is shorter than description for update listing.
+    """
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 4 4",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4 4").all()[0]
+
+    # longer than title
+    test_desc = "b" * 40
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        description=test_desc
+    )[0] is True
+
+    # shorter than title
+    test_desc = "b" * 5
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        description=test_desc
+    )[0] is False
+
+
+def test_r5_4_5_update_listing():
+    """
+    test that listing price is between 10-10000
+    """
+    user_test: User = User.query.filter_by(
+        email="test_user_id_1@gmail.com").all()[0]
+
+    assert create_listing(
+        title="Test Title R5 4 5",
+        description="A description that is long",
+        price=10,
+        address="123 Street St.",
+        user_id=user_test.user_id)[0] is True
+
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4 5").all()[0]
+
+    # price in range 10-10000
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        price=50
+    )[0] is True
+    # price less than 10
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        price=2
+    )[0] is False
+    # price more than 10000
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        price=99999
+    )[0] is False
+
+
+def test_r5_4_6_update_listing():
+    """
+    test that date is between 2021-01-02 and 2025-01-02
+    Date is auto made for today's date which is between these dates.
+    """
+    # use previous unit tests listing model to test this
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4 5").all()[0]
+
+    assert (datetime(2025, 1, 2) >
+            listing_test.last_modified_date >
+            datetime(2021, 1, 2)) is True
+
+
+def test_r5_4_7_update_listing():
+    """
+    Test that after updating a listing, it should have an owner email,
+    and that the owner email exists.
+    """
+    # Use the last unit test Listing model to find this out
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4 5").all()[0]
+
+    # user in data base
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        address="New Test Address"
+    )[0] is True
+    assert listing_test.user_id is not None
+
+    assert User.query.get(listing_test.user_id) is not None
+
+
+def test_r5_4_8_update_listing():
+    """
+    A user cannot create products that have the same title.
+    """
+    # use previous unit tests listing model to test this
+    listing_test: Listing = Listing.query.filter_by(
+        title="Test Title R5 4 5").all()[0]
+
+    # user does not have one of the same title
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title="Test Title R5 4 8"
+    )[0] is True
+
+    # user does have one of the same title
+    assert update_listing(
+        listing_id=listing_test.listing_id,
+        title="Test Title R5 4 3"
+    )[0] is False

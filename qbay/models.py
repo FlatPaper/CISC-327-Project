@@ -42,7 +42,6 @@ class User(db.Model):
 class Listing(db.Model):
     """
     An Object to Express a property listing.\n
-
     Properties:\n
     listing_id: The integer ID for the listing\n
     title: title of the listing
@@ -85,7 +84,6 @@ class ReviewStarsEnum(enum.IntEnum):
 class Review(db.Model):
     """
     A review model such that Users can leave reviews on listings.
-
     review_id: id for the review model, the primary_key
     user_id: the id of the user posting this review
     text: the text of the review
@@ -112,9 +110,7 @@ class Booking(db.Model):
     """
         A Booking object represents a booking to rent a
         property listing.
-
         Includes the following properties:
-
         booking_id: Booking ID
         user_id: Numeric ID of the user renting the property
         listing_id: ID of the listing trying to be booked
@@ -193,6 +189,48 @@ def validate_username(username: str):
     return True, "Username meets the constraints."
 
 
+def validate_title(title: str):
+    if not all(ch.isalnum() or ch.isspace() for ch in title):
+        return False, "Title of the product must be alphanumeric."
+
+    if len(title) > 80:
+        return False, "Title of the product must be 80 characters or less."
+
+    if title.strip() != title:
+        return False, "Spaces as prefixes and suffixes are not allowed."
+
+    return True, "Title meets constraints."
+
+
+def validate_description(description: str, title: str):
+    if len(description) < 20 or len(description) > 2000:
+        return False, "Description length must be between 20-2000 characters."
+
+    if len(description) <= len(title):
+        return False, "Description must be longer than the title."
+
+    return True, "Description meets constraints."
+
+
+def validate_price(price: int, listing_price: int):
+    if price < 10 or price > 1000:
+        return False, "Price must be between 10 and 1000."
+
+    if price <= listing_price:
+        return False, "New price must be greater than the previous price."
+
+    return True, "Price meets constraints."
+
+
+def validate_date(date: datetime):
+    low = datetime(2021, 1, 2)
+    high = datetime(2025, 1, 2)
+    if low > date > high:
+        return False, "New date must be between 2021-01-02 and 2025-01-02."
+
+    return True, "Date was modified."
+
+
 def register(username: str, email: str, password: str):
     # Validate the email constraints
     flag, msg = validate_email(email)
@@ -247,16 +285,12 @@ def login(email: str, password: str):
 
 def create_listing(title: str, description: str, price: int,
                    address: str, user_id: int):
-    if not all(x.isalnum() or x.isspace() for x in title):
-        return False, "The title of the listing must be alphanumeric."
-    if title[0] == " " or title[-1] == " ":
-        return False, "Space is allowed if it's not a prefix or suffix."
-    if len(title) > 80:
-        return False, "Length of title must be 80 or less characters."
-    if len(description) < 20 or len(description) > 2000:
-        return False, "Description length must be between 20-2000 characters."
-    if len(description) <= len(title):
-        return False, "Description length must be longer than the title."
+    flag, msg = validate_title(title=title)
+    if flag is False:
+        return flag, msg
+    flag, msg = validate_description(title=title, description=description)
+    if flag is False:
+        return flag, msg
     if price < 10 or price > 10000:
         return False, "Price must be between [10, 10000]."
 
@@ -267,8 +301,8 @@ def create_listing(title: str, description: str, price: int,
         return False, "User id does not exist!"
     user_email = user.email
 
-    listings = User.query.get(user_id).listings
-    if any(title == product.title for product in listings):
+    same_title_listings = Listing.query.filter_by(title=title).all()
+    if len(same_title_listings) != 0:
         return False, "Listings cannot have the same title."
 
     listing_obj = Listing(title=title, description=description,
@@ -281,3 +315,56 @@ def create_listing(title: str, description: str, price: int,
     db.session.commit()
 
     return True, "Listing was created!"
+
+
+def update_listing(listing_id: int, title=None,
+                   description=None, price=None, address=None):
+    """
+        This function updates the attributes of the posted listing.
+        If any of the inputs are not given, then automatically assigns them
+        None and updates the remaining attributes.
+        If none are given, no attributes are updated.
+    """
+    listing = Listing.query.get(listing_id)
+
+    # Each None ensures that if a missing input variable does not change.
+    if title is not None:
+        # Validate title constraints
+        flag, msg = validate_title(title)
+        if flag is False:
+            return flag, msg
+        else:
+            same_title_listings = Listing.query.filter_by(title=title).all()
+            if len(same_title_listings) != 0:
+                return False, "Listings cannot have the same title."
+            listing.title = title
+
+    if description is not None:
+        # Validate description constraints
+        flag, msg = validate_description(description, listing.title)
+        if flag is False:
+            return flag, msg
+        else:
+            listing.description = description
+
+    if price is not None:
+        # Validate price constraints
+        flag, msg = validate_price(price, listing.price)
+        if flag is False:
+            return flag, msg
+        else:
+            listing.price = price
+
+    if address is not None:
+        listing.address = address
+
+    # Validate date constraints
+    flag, msg = validate_date(datetime.today())
+    if flag is False:
+        return flag, msg
+    else:
+        listing.last_date_modified = datetime.today()
+
+    db.session.commit()
+
+    return True, "Listing has been updated."
