@@ -574,13 +574,15 @@ def test_r5_3_update_last_date_modified():
     assert (
             datetime.today().year == listing_test_after.last_modified_date.year
             and
-            datetime.today().month == listing_test_after.last_modified_date.month
+            datetime.today().month == listing_test_after.
+            last_modified_date.month
             and
             datetime.today().day == listing_test_after.last_modified_date.day
             and
             datetime.today().hour == listing_test_after.last_modified_date.hour
             and
-            datetime.today().minute == listing_test_after.last_modified_date.minute
+            datetime.today().minute == listing_test_after.
+            last_modified_date.minute
     )
 
 
