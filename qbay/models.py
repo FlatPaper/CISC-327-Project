@@ -212,11 +212,11 @@ def validate_description(description: str, title: str):
     return True, "Description meets constraints."
 
 
-def validate_price(price: int, listing):
-    if 10 > price > 1000:
+def validate_price(price: int, listing_price: int):
+    if price < 10 or price > 1000:
         return False, "Price must be between 10 and 1000."
 
-    if price <= listing.price:
+    if price <= listing_price:
         return False, "New price must be greater than the previous price."
 
     return True, "Price meets constraints."
@@ -301,8 +301,8 @@ def create_listing(title: str, description: str, price: int,
         return False, "User id does not exist!"
     user_email = user.email
 
-    listings = User.query.get(user_id).listings
-    if any(title == product.title for product in listings):
+    same_title_listings = Listing.query.filter_by(title=title).all()
+    if len(same_title_listings) != 0:
         return False, "Listings cannot have the same title."
 
     listing_obj = Listing(title=title, description=description,
@@ -334,6 +334,9 @@ def update_listing(listing_id: int, title=None,
         if flag is False:
             return flag, msg
         else:
+            same_title_listings = Listing.query.filter_by(title=title).all()
+            if len(same_title_listings) != 0:
+                return False, "Listings cannot have the same title."
             listing.title = title
 
     if description is not None:
@@ -346,7 +349,7 @@ def update_listing(listing_id: int, title=None,
 
     if price is not None:
         # Validate price constraints
-        flag, msg = validate_price(price, listing)
+        flag, msg = validate_price(price, listing.price)
         if flag is False:
             return flag, msg
         else:
