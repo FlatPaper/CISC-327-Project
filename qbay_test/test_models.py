@@ -1,6 +1,6 @@
-from qbay.models import register, login, create_listing, update_listing, \
-    Listing
-from qbay.models import User
+from qbay.models import register, login, update_user_profile
+from qbay.models import create_listing, update_listing
+from qbay.models import User, Listing
 
 from datetime import datetime
 
@@ -342,6 +342,107 @@ def test_r2_2_user_login():
         password="NoSpecialCharacters"
     )  # Must have a special character check
     assert flag is False
+
+
+def test_r3_1_update_user_profile():
+    """
+    User should only be able to update username, email, billing address,
+    and postal code.
+    """
+    assert register(
+        username="test user r3 1",
+        email="r3_1_test@gmail.com",
+        password="G00dPassword#!"
+    )[0] is True
+
+    user = User.query.filter_by(email="r3_1_test@gmail.com").all()[0]
+
+    # Check update function works correctly
+    assert update_user_profile(user.user_id,
+                               username="updated user",
+                               email="updated@gmail.com",
+                               billing_address="321 updated dr",
+                               postal_code="L9R0T9")[0] is True
+
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
+    assert (user.username == "updated user" and
+            user.email == "updated@gmail.com" and
+            user.billing_address == "321 updated dr" and
+            user.postal_code == "L9R0T9") is True
+
+
+def test_r3_2_update_user_profile():
+    """
+    Postal code should be non-empty, alphanumeric, and no special characters.
+    """
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
+
+    assert update_user_profile(
+        user.user_id,
+        postal_code="123456")[0] is False
+
+    assert update_user_profile(
+        user.user_id,
+        postal_code="ABCDEF")[0] is False
+
+    assert update_user_profile(
+        user.user_id,
+        postal_code="@#$%^&")[0] is False
+
+    # Check valid postal code
+    assert update_user_profile(
+        user.user_id,
+        postal_code="K7T9Y2")[0] is True
+
+
+def test_r3_3_update_user_profile():
+    """
+    Check if postal code is valid Canadian postal code in format A1A 1A1,
+    where A's are a letter and 1's are a number.
+    """
+
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
+
+    # Check wrongly formatted postal code
+    assert update_user_profile(
+        user.user_id,
+        postal_code="7T0P8W")[0] is False
+
+    # Check valid Canadian postal code
+    assert update_user_profile(
+        user.user_id,
+        postal_code="K7W0T9")[0] is True
+
+
+def test_r3_4_update_user_profile():
+    """
+    Updating username should follow the same constraints as when registering.
+    Checks for username being non-empty, alphanumeric-only, and space allowed
+    as long as it's not in the prefix or suffix.
+    """
+
+    user = User.query.filter_by(email="updated@gmail.com").all()[0]
+
+    # Check for empty username
+    assert update_user_profile(user.user_id,
+                               username=""
+                               )[0] is False
+    # Check for non-alphanumeric only usernames
+    assert update_user_profile(user.user_id,
+                               username="HeLlo$123"
+                               )[0] is False
+    # Check for prefix space in username
+    assert update_user_profile(user.user_id,
+                               username=" HeLlo123"
+                               )[0] is False
+    # Check for suffix space in username
+    assert update_user_profile(user.user_id,
+                               username="HeLlo123 "
+                               )[0] is False
+    # Check for a valid username
+    assert update_user_profile(user.user_id,
+                               username="valid username"
+                               )[0] is True
 
 
 def test_r4_1_create_listing():
