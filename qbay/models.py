@@ -1,9 +1,10 @@
 from qbay import app
 from flask_sqlalchemy import SQLAlchemy
 
-import datetime
+from datetime import datetime
 import enum
 import re
+
 
 db = SQLAlchemy(app)
 
@@ -60,8 +61,9 @@ class Listing(db.Model):
     description = db.Column(db.String)
     price = db.Column(db.Integer)
     last_modified_date = db.Column(db.DateTime)
-    address = db.Column(db.String, unique=True)
+    address = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_email = db.Column(db.String)
     # 'user' property defined in User.listings via backref
     reviews = db.relationship('Review', backref='listing')
     bookings = db.relationship('Booking', backref='listing')
@@ -96,9 +98,8 @@ class Review(db.Model):
     # 'user' property defined in User.listings via backref
     text = db.Column(db.String, nullable=False)
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    date = db.Column(db.DateTime)
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
-
     # 'listing' property defined in Listing.reviews via backref
 
     def __repr__(self):
@@ -124,7 +125,7 @@ class Booking(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
     # 'listing' property defined in Listings.bookings via backref
     price = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    date = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<Booking {}>'.format(self.booking_id)
@@ -189,20 +190,20 @@ def validate_username(username: str):
 
 
 def validate_title(title: str):
-    if not title.isalnum():
+    if not all(ch.isalnum() or ch.isspace() for ch in title):
         return False, "Title of the product must be alphanumeric."
 
     if len(title) > 80:
         return False, "Title of the product must be 80 characters or less."
 
-    if title != title.strip():
+    if title.strip() != title:
         return False, "Spaces as prefixes and suffixes are not allowed."
 
     return True, "Title meets constraints."
 
 
 def validate_description(description: str, title: str):
-    if 20 > len(description) > 2000:
+    if len(description) < 20 or len(description) > 2000:
         return False, "Description length must be between 20-2000 characters."
 
     if len(description) <= len(title):
@@ -229,8 +230,8 @@ def validate_address(address: str):
 
 
 def validate_date(date: datetime):
-    low = date(2021, 1, 2)
-    high = date(2025, 1, 2)
+    low = datetime(2021, 1, 2)
+    high = datetime(2025, 1, 2)
     if low > date > high:
         return False, "New date must be between 2021-01-02 and 2025-01-02."
 
@@ -291,15 +292,12 @@ def login(email: str, password: str):
 
 def create_listing(title: str, description: str, price: int,
                    address: str, user_id: int):
-    # Check title validation
-    flag, msg = validate_title(title)
+    flag, msg = validate_title(title=title)
     if flag is False:
         return flag, msg
-    # Check description validation
-    flag, msg = validate_description(description)
+    flag, msg = validate_description(title=title, description=description)
     if flag is False:
         return flag, msg
-
     if price < 10 or price > 10000:
         return False, "Price must be between [10, 10000]."
 
@@ -323,7 +321,7 @@ def create_listing(title: str, description: str, price: int,
 
     db.session.commit()
 
-    return True
+    return True, "Listing was created!"
 
 
 def update_listing(listing_id: int, title=None,
