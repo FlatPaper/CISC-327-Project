@@ -24,8 +24,8 @@ def create_listing_page():
                     print('Address: ', address)
                     print('Description: ', description)
                     print('Price: $', price)
-            except:
-                print('Price is not an integer')
+            except ValueError:
+                print('Price needs to be an integer')
 
         elif selection == 2:
             # replace the break with user home page function
