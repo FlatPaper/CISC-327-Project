@@ -8,7 +8,11 @@ def register_page():
     password_twice = input('Please input the password again: ')
 
     if password != password_twice:
-        print("Password entered is not the same.")
+        print(
+            "Passwords entered are not the same.\n"
+            "Registration failed."
+        )
+        return False, "Password entered is not the same."
 
     result = register(email=email, username=username, password=password)
     if result[0]:
