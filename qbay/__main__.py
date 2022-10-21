@@ -1,10 +1,11 @@
 from qbay.models import *
-from qbay.cli import register_page
+from qbay.cli import register_page, login_page
 
 
 def main():
+    logged_in = False
     while True:
-        logged_in = False
+        current_user = None
         if logged_in:
             selection = input(
                 "Your options are as follows:\n"
@@ -14,6 +15,9 @@ def main():
                 "Please press 4 to log out.\n"
             )
             selection = selection.strip()
+            if selection == "4":
+                logged_in = False
+                current_user = None
         else:
             selection = input(
                 "Your options are as follows:\n"
@@ -22,6 +26,15 @@ def main():
                 "Please press 3 to exit.\n"
             )
             selection = selection.strip()
+            if selection == "1":
+                result = login_page()
+                if result[0]:
+                    # Stores tuple of (email, password)
+                    current_user = (result[2], result[3])
+                    logged_in = True
+                    print("Logged in!")
+                else:
+                    print("Login failed!")
             if selection == "2":
                 register_page()
 
