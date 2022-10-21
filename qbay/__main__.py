@@ -1,34 +1,47 @@
-from qbay.models import create_listing
+from qbay.models import *
+from qbay.cli import register_page, login_page, create_listing_page
 
 
-def create_listing_page():
-    # loop till they choose to exit
+def main():
+    logged_in = False
+    current_user = None
     while True:
-        selection = input('Press 1 to make a listing or 2 to exit the page')
-        if selection == 1:
-            title = input('Enter the title of your listing: ')
-            address = input('Enter the address of your property: ')
-            description = input('Enter the description of your property: ')
-            price = input('Enter the price per night (whole dollars): ')
-            try:
-                price = int(price)
-                # replace the 1 with the currently logged in user
-                flag, msg = create_listing(title, description, price, address,
-                                           1)
-                if flag is False:
-                    print('Listing not created')
-                    print(msg)
+        if logged_in:
+            selection = input(
+                "Your options are as follows:\n"
+                "Please press 1 to create a listing.\n"
+                "Please press 2 to update a listing.\n"
+                "Please press 3 to update your user profile page.\n"
+                "Please press 4 to log out.\n"
+            )
+            selection = selection.strip()
+            if selection == "1":
+                id = (User.query.get(current_user[0])).user_id
+                create_listing_page(id)
+            if selection == "4":
+                logged_in = False
+                current_user = None
+        else:
+            selection = input(
+                "Your options are as follows:\n"
+                "Please press 1 to log in.\n"
+                "Please press 2 to register an account.\n"
+                "Please press 3 to exit.\n"
+            )
+            selection = selection.strip()
+            if selection == "1":
+                result = login_page()
+                if result[0]:
+                    # Stores tuple of (email, password)
+                    current_user = (result[2], result[3])
+                    logged_in = True
+                    print("Logged in!")
                 else:
-                    print('Listing created')
-                    print('Title: ', title)
-                    print('Address: ', address)
-                    print('Description: ', description)
-                    print('Price: $', price)
-            except ValueError:
-                print('Price needs to be an integer')
+                    print("Login failed!")
+            if selection == "2":
+                register_page()
 
-        elif selection == 2:
-            # replace the break with user home page function
-            break 
 
+if __name__ == '__main__':
+    main()
     
