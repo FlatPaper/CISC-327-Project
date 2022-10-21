@@ -20,8 +20,6 @@ def main():
             if selection == "4":
                 logged_in = False
                 current_user = None
-            elif selection == "2":
-                
         else:
             selection = input(
                 "Your options are as follows:\n"
