@@ -1,4 +1,4 @@
-from qbay.models import register
+from qbay.models import register, login
 
 
 def register_page():
@@ -17,3 +17,11 @@ def register_page():
     else:
         print(result[1])
         print('Registration failed.')
+
+
+def login_page():
+    email = input('Please input email: ')
+    password = input('Please input password: ')
+
+    result = login(email=email, password=password)
+    return result[0], result[1], email, password
