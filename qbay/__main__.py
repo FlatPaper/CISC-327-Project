@@ -1,5 +1,6 @@
 from qbay.models import *
-from qbay.cli import register_page, login_page, update_user_page
+from qbay.cli import register_page, login_page, update_user_page, \
+    create_listing_page
 
 
 def main():
@@ -15,6 +16,11 @@ def main():
                 "Please press 4 to log out.\n"
             )
             selection = selection.strip()
+            if selection == "1":
+                user_email = current_user[0]
+                user_id = User.query.filter_by(
+                    email=user_email).all()[0].user_id
+                create_listing_page(user_id)
             if selection == "3":
                 user = User.query.filter_by(email=current_user[0]).all()[0]
                 result = update_user_page(user.user_id)
@@ -45,6 +51,8 @@ def main():
                     print("Login failed!")
             if selection == "2":
                 register_page()
+            if selection == "3":
+                break
 
 
 if __name__ == '__main__':
