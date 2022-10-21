@@ -7,11 +7,11 @@ def main():
         logged_in = False
         if logged_in:
             selection = input(
-                "Your options are as follows:"
-                "Please press 1 to create a listing."
-                "Please press 2 to update a listing."
-                "Please press 3 to update your user profile page."
-                "Please press 4 to log out."
+                "Your options are as follows:\n"
+                "Please press 1 to create a listing.\n"
+                "Please press 2 to update a listing.\n"
+                "Please press 3 to update your user profile page.\n"
+                "Please press 4 to log out.\n"
             )
             selection = selection.strip()
         else:
