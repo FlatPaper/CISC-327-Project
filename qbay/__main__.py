@@ -1,5 +1,6 @@
 from qbay.models import *
-from qbay.cli import register_page, login_page, create_listing_page
+from qbay.cli import register_page, login_page, update_user_page, \
+    create_listing_page
 
 
 def main():
@@ -20,6 +21,14 @@ def main():
                 user_id = User.query.filter_by(
                     email=user_email).all()[0].user_id
                 create_listing_page(user_id)
+            if selection == "3":
+                user = User.query.filter_by(email=current_user[0]).all()[0]
+                result = update_user_page(user.user_id)
+                if result[0]:
+                    print("Successfully updated profile!")
+                else:
+                    print("Unable to update profile!")
+                    print(result[1])
             if selection == "4":
                 logged_in = False
                 current_user = None
