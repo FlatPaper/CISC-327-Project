@@ -33,7 +33,7 @@ def login_page():
 
 def create_listing_page(current_user):
     while True:
-        selection = input('Press 1 to make a listing or 2 to exit the page')
+        selection = input('Press 1 to make a listing or 2 to exit the page: ')
         if selection == "1":
             title = input('Enter the title of your listing: ')
             address = input('Enter the address of your property: ')
@@ -44,8 +44,8 @@ def create_listing_page(current_user):
                 flag, msg = create_listing(title, description, price, address,
                                            current_user)
                 if flag is False:
-                    print("Listing not created")
                     print(msg)
+                    print("Listing not created.")
                 else:
                     print("Listing created")
                     print("Title: {}".format(title))
@@ -53,7 +53,6 @@ def create_listing_page(current_user):
                     print("Description: {}".format(description))
                     print("Price: ${}".format(price))
             except ValueError:
-                print('Price needs to be an integer')
-
-        elif selection == 2:
+                print('Price needs to be an integer.')
+        if selection == "2":
             break
