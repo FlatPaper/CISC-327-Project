@@ -1,4 +1,4 @@
-from qbay.models import create_listing, register, login
+from qbay.models import register, login, create_listing
 
 
 def register_page():
