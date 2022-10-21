@@ -197,6 +197,12 @@ def update_user_profile(user_id: int, username=None, email=None,
     update_address = False
     update_postal_code = False
 
+    # Check if username is unique
+    exists = User.query.filter_by(username=username).all()
+    
+    if len(exists) > 0:
+        return False, "Username already exists."
+
     if username is not None:
         # Check new username for constraints
         flag, msg = validate_username(username)
