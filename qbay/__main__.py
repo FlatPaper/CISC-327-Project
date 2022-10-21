@@ -16,9 +16,10 @@ def main():
             )
             selection = selection.strip()
             if selection == "1":
-                email = current_user[0]
-                id = (User.query.get(email=email).all()[0]).user_id
-                create_listing_page(id)
+                user_email = current_user[0]
+                user_id = User.query.filter_by(
+                    email=user_email).all()[0].user_id
+                create_listing_page(user_id)
             if selection == "4":
                 logged_in = False
                 current_user = None
@@ -41,6 +42,8 @@ def main():
                     print("Login failed!")
             if selection == "2":
                 register_page()
+            if selection == "3":
+                break
 
 
 if __name__ == '__main__':
