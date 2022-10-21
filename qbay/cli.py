@@ -26,10 +26,10 @@ def update_listing_page():
                     print(msg)
                 else:
                     print('Listing updated')
-                    print('Title: ', title)
-                    print('Description: ', address)
-                    print('Address: ', description)
-                    print('Price: $', price)
+                    print(f"Title: {title}")
+                    print(f"Description: {description}")
+                    print(f"Address: {address}")
+                    print(f"Price: {price}")
             except ValueError:
                 print('Price must be an integer')
         elif selection == 4:
