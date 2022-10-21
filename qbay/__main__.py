@@ -16,7 +16,8 @@ def main():
             )
             selection = selection.strip()
             if selection == "1":
-                id = (User.query.get(current_user[0])).user_id
+                email = current_user[0]
+                id = (User.query.get(email=email).all()[0]).user_id
                 create_listing_page(id)
             if selection == "4":
                 logged_in = False
