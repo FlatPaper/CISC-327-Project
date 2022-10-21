@@ -1,5 +1,5 @@
 from qbay.models import *
-from qbay.cli import register_page, login_page
+from qbay.cli import register_page, login_page, update_listing_page
 
 
 def main():
@@ -8,16 +8,20 @@ def main():
     while True:
         if logged_in:
             selection = input(
-                "Your options are as follows:\n"
-                "Please press 1 to create a listing.\n"
-                "Please press 2 to update a listing.\n"
+                "Your options are as follows:"
+                "Please press 1 to create a listing."
+                "Please press 2 to update a listing."
                 "Please press 3 to update your user profile page.\n"
-                "Please press 4 to log out.\n"
+                "Please press 4 to log out."
             )
             selection = selection.strip()
+            if selection == "2":
+                update_listing_page()
             if selection == "4":
                 logged_in = False
                 current_user = None
+            elif selection == "2":
+                
         else:
             selection = input(
                 "Your options are as follows:\n"
@@ -39,5 +43,5 @@ def main():
                 register_page()
 
 
-if __name__ == '__main__':
+if name == 'main':
     main()
