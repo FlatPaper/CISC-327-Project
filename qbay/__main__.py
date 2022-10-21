@@ -4,8 +4,8 @@ from qbay.cli import register_page, login_page
 
 def main():
     logged_in = False
+    current_user = None
     while True:
-        current_user = None
         if logged_in:
             selection = input(
                 "Your options are as follows:\n"
