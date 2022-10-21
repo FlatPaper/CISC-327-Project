@@ -32,7 +32,7 @@ def update_listing_page():
                     print('Price: $', price)
             except ValueError:
                 print('Price must be an integer')
-        elif selection = 4:
+        elif selection == 4:
             address = input('Enter the new address for your listing: ')
         elif selection == 5:
             # user homepage fuction should replace break
