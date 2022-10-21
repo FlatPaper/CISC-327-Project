@@ -2,15 +2,6 @@ from qbay.models import *
 from qbay.cli import register_page
 
 
-def user_logged_in():
-    selection = input(
-        "Your options are as follows:"
-        "Please press 1 to create a listing."
-        "Please press 2 to update a listing."
-        "Please press 3 to update your user profile page."
-    )
-
-
 def main():
     while True:
         logged_in = False
