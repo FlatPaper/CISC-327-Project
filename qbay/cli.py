@@ -93,7 +93,7 @@ def update_listing_page(user_id):
     title = input('Enter the new title for your listing: ')
     description = input('Enter the new description for your '
                         'listing: ')
-    price = input('Enter the new price per night (in whole dollars: ')
+    price = input('Enter the new price per night (in whole dollars): ')
     address = input('Enter the new address for your listing: ')
 
     update_title = len(title) > 0
@@ -110,10 +110,13 @@ def update_listing_page(user_id):
     if not update_address:
         address = None
 
-    print(f"Title: {title}, Desc: {description}, Price: {price}, address: {address}")
+    print(f"Title: {title}, Desc: {description}, Price: {price}, "
+          f"address: {address}")
 
     try:
-        price = int(price)
-        return update_listing(int(listing_id), title, description, price, address)
+        if price is not None:
+            price = int(price)
+        return update_listing(int(listing_id), title, description, price,
+                              address)
     except ValueError:
         return False, ValueError
