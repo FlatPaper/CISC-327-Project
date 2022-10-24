@@ -7,7 +7,6 @@ from qbay.validators import validate_email, validate_title, \
 from datetime import datetime
 import enum
 
-
 db = SQLAlchemy(app)
 
 
@@ -102,6 +101,7 @@ class Review(db.Model):
     stars = db.Column(db.Enum(ReviewStarsEnum), nullable=False)
     date = db.Column(db.DateTime)
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
+
     # 'listing' property defined in Listing.reviews via backref
 
     def __repr__(self):
@@ -199,7 +199,7 @@ def update_user_profile(user_id: int, username=None, email=None,
 
     # Check if username is unique
     exists = User.query.filter_by(username=username).all()
-    
+
     if len(exists) > 0:
         return False, "Username already exists."
 
