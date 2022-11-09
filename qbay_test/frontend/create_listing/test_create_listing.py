@@ -50,6 +50,7 @@ def test_create_listing_input_partition():
     b = "".join(str(output).split())
     assert a == b
 
+
 def test_create_listing_output_exhaustive():
     current_folder = Path(__file__).parent
     # All valid inputs for create listing
@@ -152,7 +153,6 @@ def test_create_listing_output_exhaustive():
     a = "".join(str(expected_out).split())
     b = "".join(str(output).split())
     assert a == b
-
 
 
 def test_create_listing_input_boundry():
