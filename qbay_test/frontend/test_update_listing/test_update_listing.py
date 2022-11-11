@@ -12,7 +12,7 @@ for i in range(1, 12):
     expected_in = open(current_folder.joinpath(
         'test_update_listing_'+i+'.in'))
     expected_out = open(current_folder.joinpath(
-        'test_update_listing_'+i'.out')).read()
+        'test_update_listing_'+i+'.out')).read()
 
     print(expected_out)
 
