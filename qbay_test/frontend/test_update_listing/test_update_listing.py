@@ -6,7 +6,7 @@ import subprocess
 current_folder = Path(__file__).parent
 
 
-for in in range (1, 12):
+for in in range(1, 12):
 
     # read expected in/out
     expected_in = open(current_folder.joinpath(
