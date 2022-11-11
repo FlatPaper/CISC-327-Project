@@ -94,15 +94,16 @@ def test_register3():
     past 2000 characters each?
     Should pass constraints with failure on username length.
     """
-    fin = open("input_partition/test_register16.in", "w")
-    fin.write("2\n")
-    username = "a" * 2000
-    password = "G00dPassword!" * 154
-    fin.write("good.email15@gmail.com\n")
-    fin.write(username + '\n')
-    fin.write(password + '\n')
-    fin.write(password + '\n')
-    fin.close()
+    # Code to output big boundary test on username and password
+    # fin = open("input_partition/test_register16.in", "w")
+    # fin.write("2\n")
+    # username = "a" * 2000
+    # password = "G00dPassword!" * 154
+    # fin.write("good.email15@gmail.com\n")
+    # fin.write(username + '\n')
+    # fin.write(password + '\n')
+    # fin.write(password + '\n')
+    # fin.close()
 
     str_in = "input_partition/test_register16.in"
     str_out = "input_partition/test_register16.out"
