@@ -1,7 +1,7 @@
 from os import popen
 from pathlib import Path
 import subprocess
-from qbay.models import register, create_listing, User, Listing
+from qbay.models import User
 from flask_sqlalchemy import SQLAlchemy
 from qbay import app
 
