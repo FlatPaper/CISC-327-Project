@@ -68,7 +68,7 @@ def test_update_listing2():
     Should fail updating a listing vs. succeeding updating
     """
 
-    for i in range(1, 9):
+    for i in range(9, 11):
         # read expected in/out
         expected_in = open(current_folder.joinpath(
             'test_update_listing_' + str(i) + '.in'))
