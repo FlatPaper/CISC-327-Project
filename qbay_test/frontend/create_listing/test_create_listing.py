@@ -4,235 +4,76 @@ import subprocess
 
 
 def test_create_listing_input_partition():
+    """
+    Test 1 All valid inputs for create listing
+    Test 2 Non Valid title
+    Test 3 Non valid description
+    Test 4 Non Valid Price
+    """
     current_folder = Path(__file__).parent
-    # All valid inputs for create listing
-    expected_in = open(current_folder.joinpath('test1.in'))
-    expected_out = open(current_folder.joinpath('test1.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Non Valid title
-    expected_in = open(current_folder.joinpath('test2.in'))
-    expected_out = open(current_folder.joinpath('test2.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Non valid description
-    expected_in = open(current_folder.joinpath('test3.in'))
-    expected_out = open(current_folder.joinpath('test3.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Non Valid Price
-    expected_in = open(current_folder.joinpath('test4.in'))
-    expected_out = open(current_folder.joinpath('test4.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
+    
+    for i in range (1,5):
+        expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
+        expected_out = open(current_folder.joinpath('test' + str(i)
+                            + '.out')).read()
+        output = subprocess.run(
+            ['python', '-m', 'qbay'],
+            stdin=expected_in,
+            capture_output=True,
+        ).stdout.decode()
+        a = "".join(str(expected_out).split())
+        b = "".join(str(output).split())
+        assert a == b
 
 
 def test_create_listing_output_exhaustive():
+    """
+    Test 5 All valid inputs for create listing
+    Test 6 Title is not alphanumeric
+    Test 7 Title is greater than 80 characters
+    Test 8 Title has spaces at the end and start
+    Test 9 Description not between 20-2000 characters.
+    test 10 Description not longer than the title.
+    Test 11 Price is not a number
+    Test 12 Price is not between 10-10000
+    test 13 Shares title with another listing
+    """
     current_folder = Path(__file__).parent
-    # All valid inputs for create listing
-    expected_in = open(current_folder.joinpath('test5.in'))
-    expected_out = open(current_folder.joinpath('test5.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-
-    # Title is not alphanumeric
-    expected_in = open(current_folder.joinpath('test6.in'))
-    expected_out = open(current_folder.joinpath('test6.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Title is greater than 80 characters
-    expected_in = open(current_folder.joinpath('test7.in'))
-    expected_out = open(current_folder.joinpath('test7.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Title has spaces at the end and start
-    expected_in = open(current_folder.joinpath('test8.in'))
-    expected_out = open(current_folder.joinpath('test8.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Description not between 20-2000 characters.
-    expected_in = open(current_folder.joinpath('test9.in'))
-    expected_out = open(current_folder.joinpath('test9.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Description not longer than the title.
-    expected_in = open(current_folder.joinpath('test10.in'))
-    expected_out = open(current_folder.joinpath('test10.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Price is not a number
-    expected_in = open(current_folder.joinpath('test11.in'))
-    expected_out = open(current_folder.joinpath('test11.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Price is not between 10-10000
-    expected_in = open(current_folder.joinpath('test12.in'))
-    expected_out = open(current_folder.joinpath('test12.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Shares title with another listing
-    expected_in = open(current_folder.joinpath('test13.in'))
-    expected_out = open(current_folder.joinpath('test13.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
+    for i in range (5,14):
+        expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
+        expected_out = open(current_folder.joinpath('test' + str(i)
+                            + '.out')).read()
+        output = subprocess.run(
+            ['python', '-m', 'qbay'],
+            stdin=expected_in,
+            capture_output=True,
+        ).stdout.decode()
+        a = "".join(str(expected_out).split())
+        b = "".join(str(output).split())
+        assert a == b
 
 
 def test_create_listing_input_boundry():
+    """
+    Test 14 All valid inputs for create listing
+    Test 15 Title is 80 characters
+    Test 16 Description is 20 charcters
+    Test 17 Description is 2000 chracters
+    Test 18 Title and Description are the same length
+    Test 19 Price is 10
+    Test 20 Price is 10000
+    """
     current_folder = Path(__file__).parent
-    # All valid inputs for create listing
-    expected_in = open(current_folder.joinpath('test14.in'))
-    expected_out = open(current_folder.joinpath('test14.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-
-    # Title is 80 characters
-    expected_in = open(current_folder.joinpath('test15.in'))
-    expected_out = open(current_folder.joinpath('test15.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Description is 20 charcters
-    expected_in = open(current_folder.joinpath('test16.in'))
-    expected_out = open(current_folder.joinpath('test16.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Description is 2000 chracters
-    expected_in = open(current_folder.joinpath('test17.in'))
-    expected_out = open(current_folder.joinpath('test17.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Title and Description are the same length
-    expected_in = open(current_folder.joinpath('test18.in'))
-    expected_out = open(current_folder.joinpath('test18.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Price is 10
-    expected_in = open(current_folder.joinpath('test19.in'))
-    expected_out = open(current_folder.joinpath('test19.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
-    # Price is 10000
-    expected_in = open(current_folder.joinpath('test20.in'))
-    expected_out = open(current_folder.joinpath('test20.out')).read()
-    output = subprocess.run(
-        ['python', '-m', 'qbay'],
-        stdin=expected_in,
-        capture_output=True,
-    ).stdout.decode()
-    a = "".join(str(expected_out).split())
-    b = "".join(str(output).split())
-    assert a == b
+    for i in range (14,21):
+        expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
+        expected_out = open(current_folder.joinpath('test' + str(i)
+                            + '.out')).read()
+        output = subprocess.run(
+            ['python', '-m', 'qbay'],
+            stdin=expected_in,
+            capture_output=True,
+        ).stdout.decode()
+        a = "".join(str(expected_out).split())
+        b = "".join(str(output).split())
+        assert a == b
     
