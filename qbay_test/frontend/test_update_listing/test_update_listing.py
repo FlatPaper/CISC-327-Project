@@ -1,20 +1,32 @@
 from os import popen
 from pathlib import Path
 import subprocess
-from qbay.models import register
+from qbay.models import register, create_listing
 
 # get expected input/output file
 current_folder = Path(__file__).parent
 
 
 def test_login():
-    """capsys -- object created by pytest to
-    capture stdout and stderr"""
+    """
+    Input partition method.
+    Split inputs by:
+    Title not being alphanumeric
+    Title being > 80 characters
+    Title have prefix / suffix as space
+    Description being < 20 characters or > 2000 characters
+    Description being shorter than the title
+    Price being < 10 or > 1000
+    Price being < previous price
+    vs. Good input
+    """
 
     register(username="Temporary 1", email="pass_empty@gmail.com",
              password="Pass_pwd")
+    create_listing(title="Test Title1", description="Temporary description",
+                   price=50, address="", user_id=1)
 
-    for i in range(1, 12):
+    for i in range(1, 9):
         # read expected in/out
         expected_in = open(current_folder.joinpath(
             'test_update_listing_' + str(i) + '.in'))
