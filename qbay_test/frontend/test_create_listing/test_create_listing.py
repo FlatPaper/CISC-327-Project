@@ -1,6 +1,10 @@
-from os import popen
 from pathlib import Path
 import subprocess
+from qbay.models import User, register
+from flask_sqlalchemy import SQLAlchemy
+from qbay import app
+
+db = SQLAlchemy(app)
 
 
 def test_create_listing_input_partition():
@@ -11,6 +15,12 @@ def test_create_listing_input_partition():
     Test 4 Non Valid Price
     """
     current_folder = Path(__file__).parent
+
+    db.session.query(User).delete()
+    db.session.commit()
+
+    register(email="pass_empty@gmail.com", password="Pass_pwd",
+             username="david")
     
     for i in range(1, 5):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
@@ -53,7 +63,7 @@ def test_create_listing_output_exhaustive():
         assert a == b
 
 
-def test_create_listing_input_boundry():
+def test_create_listing_input_boundary():
     """
     Test 14 All valid inputs for create listing
     Test 15 Title is 80 characters
