@@ -1,10 +1,5 @@
-import string
-from os import popen
 from pathlib import Path
 import subprocess
-import random
-from qbay.validators import validate_email, validate_password, \
-    validate_username
 
 # get expected input/output folder
 current_folder = Path(__file__).parent
