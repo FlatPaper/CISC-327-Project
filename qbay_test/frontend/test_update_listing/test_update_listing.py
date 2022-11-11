@@ -1,13 +1,17 @@
 from os import popen
 from pathlib import Path
 import subprocess
-from qbay.models import register, create_listing
+from qbay.models import register, create_listing, User, Listing
+from flask_sqlalchemy import SQLAlchemy
+from qbay import app
 
 # get expected input/output file
 current_folder = Path(__file__).parent
 
+db = SQLAlchemy(app)
 
-def test_login():
+
+def test_update_listing1():
     """
     Input partition method.
     Split inputs by:
@@ -20,6 +24,10 @@ def test_login():
     Price being < previous price
     vs. Good input
     """
+
+    db.session.query(User).delete()
+    db.session.query(Listing).delete()
+    db.session.commit()
 
     register(username="Temporary 1", email="pass_empty@gmail.com",
              password="Pass_pwd")
