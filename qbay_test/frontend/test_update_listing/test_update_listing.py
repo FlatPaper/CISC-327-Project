@@ -33,7 +33,7 @@ def test_login():
         expected_out = open(current_folder.joinpath(
             'test_update_listing_' + str(i) + '.out')).read()
 
-        print(expected_out)
+        # print(expected_out)
 
         # pip the input
         output = subprocess.run(
@@ -42,7 +42,7 @@ def test_login():
             capture_output=True,
         ).stdout.decode()
 
-        print('outputs', output)
+        # print('outputs', output)
 
         expected_out = expected_out.replace('\r', '')
         output = output.replace('\r', '')
