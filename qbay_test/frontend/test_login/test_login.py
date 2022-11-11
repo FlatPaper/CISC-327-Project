@@ -51,3 +51,4 @@ def test_login1():
         output = output.replace(' ', '')
 
         assert output.strip() == expected_out.strip()
+        
