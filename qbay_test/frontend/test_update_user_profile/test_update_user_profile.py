@@ -1,4 +1,3 @@
-from os import popen
 from pathlib import Path
 import subprocess
 from qbay.models import User
