@@ -198,9 +198,9 @@ def update_user_profile(user_id: int, username=None, email=None,
     update_postal_code = False
 
     # Check if username is unique
-    exists = User.query.filter_by(username=username).all()
+    username_exists = User.query.filter_by(username=username).all()
 
-    if len(exists) > 0:
+    if len(username_exists) > 0:
         return False, "Username already exists."
 
     if username is not None:
@@ -226,6 +226,10 @@ def update_user_profile(user_id: int, username=None, email=None,
         if flag is False:
             return flag, msg
         update_postal_code = True
+    else:
+        exists = user.postal_code
+        if exists is None:
+            return False, "Postal code cannot be empty."
 
     if update_username:
         user.username = username

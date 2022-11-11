@@ -1,0 +1,37 @@
+Your options are as follows:
+Please press 1 to log in.
+Please press 2 to register an account.
+Please press 3 to exit.
+Please input email:
+Please input a username:
+Please input password:
+Please input the password again:
+User has been created!
+Registration succeeded.
+Your options are as follows:
+Please press 1 to log in.
+Please press 2 to register an account.
+Please press 3 to exit.
+Please input email:
+Please input password:
+Logged in!
+Your options are as follows:
+Please press 1 to create a listing.
+Please press 2 to update a listing.
+Please press 3 to update your user profile page.
+Please press 4 to log out.
+Please input updated username:
+Please input updated email:
+Please input updated address:
+Please input updated postal code:
+Unable to update profile!
+The username must be longer than 2 characters and shorter than 20 characters. 
+Your options are as follows:
+Please press 1 to create a listing.
+Please press 2 to update a listing.
+Please press 3 to update your user profile page.
+Please press 4 to log out.
+Your options are as follows:
+Please press 1 to log in.
+Please press 2 to register an account.
+Please press 3 to exit.
