@@ -12,7 +12,7 @@ def test_create_listing_input_partition():
     """
     current_folder = Path(__file__).parent
     
-    for i in range (1,5):
+    for i in range(1, 5):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
         expected_out = open(current_folder.joinpath('test' + str(i)
                             + '.out')).read()
@@ -39,7 +39,7 @@ def test_create_listing_output_exhaustive():
     test 13 Shares title with another listing
     """
     current_folder = Path(__file__).parent
-    for i in range (5,14):
+    for i in range(5, 14):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
         expected_out = open(current_folder.joinpath('test' + str(i)
                             + '.out')).read()
@@ -64,7 +64,7 @@ def test_create_listing_input_boundry():
     Test 20 Price is 10000
     """
     current_folder = Path(__file__).parent
-    for i in range (14,21):
+    for i in range(14, 21):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
         expected_out = open(current_folder.joinpath('test' + str(i)
                             + '.out')).read()
