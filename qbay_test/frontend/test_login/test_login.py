@@ -20,6 +20,7 @@ def test_login1():
     """
 
     db.session.query(User).delete()
+    db.session.commit()
     register(username="FlatPaper", email="good.email@gmail.com",
              password="GoodPassword!")
 
@@ -51,4 +52,44 @@ def test_login1():
         output = output.replace(' ', '')
 
         assert output.strip() == expected_out.strip()
-        
+
+
+def test_login2():
+    """
+    Output partition test
+    Login failed and login succeeded
+    """
+
+    db.session.query(User).delete()
+    db.session.commit()
+    register(username="FlatPaper", email="good.email@gmail.com",
+             password="GoodPassword!")
+
+    for i in range(9, 11):
+        str_in = "test_cases/test_login" + str(i) + ".in"
+        str_out = "test_cases/test_login" + str(i) + ".out"
+        expected_in = open(current_folder.joinpath(str_in))
+        expected_out = open(current_folder.joinpath(str_out)).read()
+
+        # print("\n\nEXPECTED OUTPUT")
+        # print(expected_out)
+        # print("\n\n")
+
+        output = subprocess.run(
+            ['python', '-m', 'qbay'],
+            stdin=expected_in,
+            capture_output=True,
+        ).stdout.decode()
+        #
+        # print('---------------------------')
+        # print('outputs',output)
+        # print('---------------------------')
+
+        expected_out = expected_out.replace('\r', '')
+        output = output.replace('\r', '')
+        expected_out = expected_out.replace('\n', '')
+        output = output.replace('\n', '')
+        expected_out = expected_out.replace(' ', '')
+        output = output.replace(' ', '')
+
+        assert output.strip() == expected_out.strip()
