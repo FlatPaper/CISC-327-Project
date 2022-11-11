@@ -94,3 +94,41 @@ def test_update_listing2():
         output = output.replace(' ', '')
 
         assert output.strip() == expected_out.strip()
+
+
+def test_update_listing3():
+    """
+    Boundry testing method.
+    Test upper bound for title.
+    Test upper bound for price.
+    Test that price can only be increased when updating.
+    Test lower bound for description.
+    Test upper bound for description.
+    """
+
+    for i in range(11, 16):
+        # read expected in/out
+        expected_in = open(current_folder.joinpath(
+            'test_update_listing_' + str(i) + '.in'))
+        expected_out = open(current_folder.joinpath(
+            'test_update_listing_' + str(i) + '.out')).read()
+
+        # print(expected_out)
+
+        # pip the input
+        output = subprocess.run(
+            ['python', '-m', 'qbay'],
+            stdin=expected_in,
+            capture_output=True,
+        ).stdout.decode()
+
+        # print('outputs', output)
+
+        expected_out = expected_out.replace('\r', '')
+        output = output.replace('\r', '')
+        expected_out = expected_out.replace('\n', '')
+        output = output.replace('\n', '')
+        expected_out = expected_out.replace(' ', '')
+        output = output.replace(' ', '')
+
+        assert output.strip() == expected_out.strip()
