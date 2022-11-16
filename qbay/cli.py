@@ -75,7 +75,6 @@ def create_listing_page(current_user):
         print("Price: ${}".format(price))
     
 
-
 def update_listing_page(user_id):
     print("---------------------------------------------------------")
     print(f"Your current listings: {User.query.get(user_id).listings}")
