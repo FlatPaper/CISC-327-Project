@@ -3,6 +3,13 @@ from pathlib import Path
 
 
 def test_create_listing_injection_title():
+    """
+        This function uses the injection.txt file to
+        inject different lines into the "title" argument
+        of the create_listing function to ensure that there
+        is no weakpoint in the code that could be exploited
+        
+    """
     current_folder = Path(__file__).parent
     f = open(current_folder.joinpath('injection.txt'))
     lines = f.readlines()
@@ -15,6 +22,7 @@ def test_create_listing_injection_title():
                        user_id=1)
 
 
+# The following functions repeat the above with their respective argument
 def test_create_listing_injection_description():
     current_folder = Path(__file__).parent
     f = open(current_folder.joinpath('injection.txt'))
