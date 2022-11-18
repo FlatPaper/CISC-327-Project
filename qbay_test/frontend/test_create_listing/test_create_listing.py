@@ -21,7 +21,7 @@ def test_create_listing_input_partition():
 
     register(email="pass_empty@gmail.com", password="Pass_pwd",
              username="david")
-    
+
     for i in range(1, 5):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
         expected_out = open(current_folder.joinpath('test' + str(i)
@@ -86,4 +86,3 @@ def test_create_listing_input_boundary():
         a = "".join(str(expected_out).split())
         b = "".join(str(output).split())
         assert a == b
-    
