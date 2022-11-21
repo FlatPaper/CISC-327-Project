@@ -61,22 +61,19 @@ def create_listing_page(current_user):
     address = input('Enter the address of your property: ')
     description = input('Enter the description of your property: ')
     price = input('Enter the price per night (whole dollars): ')
-    try:
-        price = int(price)
-        flag, msg = create_listing(title, description, price, address,
-                                   current_user)
-        if flag is False:
-            print(msg)
-            print("Listing not created.")
-        else:
-            print("Listing created")
-            print("Title: {}".format(title))
-            print("Address: {}".format(address))
-            print("Description: {}".format(description))
-            print("Price: ${}".format(price))
-    except ValueError:
-        print('Price needs to be an integer.')
-
+    
+    flag, msg = create_listing(title, description, price, address,
+                               current_user)
+    if flag is False:
+        print(msg)
+        print("Listing not created.")
+    else:
+        print("Listing created")
+        print("Title: {}".format(title))
+        print("Address: {}".format(address))
+        print("Description: {}".format(description))
+        print("Price: ${}".format(price))
+    
 
 def update_listing_page(user_id):
     print("---------------------------------------------------------")

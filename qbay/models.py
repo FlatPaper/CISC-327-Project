@@ -253,10 +253,19 @@ def create_listing(title: str, description: str, price: int,
     flag, msg = validate_description(title=title, description=description)
     if flag is False:
         return flag, msg
+    try:
+        price = int(price)
+    except ValueError:
+        return False, "Price needs to be an integer."    
+    
     if price < 10 or price > 10000:
         return False, "Price must be between [10, 10000]."
 
     date = datetime.today()
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        return False, "User ID needs to be an integer."    
 
     user = User.query.get(user_id)
     if user is None:
