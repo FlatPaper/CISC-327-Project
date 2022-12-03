@@ -127,7 +127,7 @@ class Booking(db.Model):
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.listing_id'))
     # 'listing' property defined in Listings.bookings via backref
     price = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.Date)
 
     def __repr__(self):
         return '<Booking {}>'.format(self.booking_id)
