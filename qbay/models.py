@@ -4,7 +4,7 @@ from qbay.validators import validate_email, validate_title, \
     validate_username, validate_password, validate_price, validate_date, \
     validate_description, validate_postal_code
 
-from datetime import datetime
+from datetime import datetime, date
 import enum
 
 db = SQLAlchemy(app)
