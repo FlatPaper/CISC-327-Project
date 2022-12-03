@@ -358,14 +358,17 @@ def book_listing(listing_id: int, user_id: int, booked_date: date):
         return False, "The listing price is greater than your balance."
 
     if booked_date <= date.today():
-        return False, "You cannot book a listing for today or any previous day!"
+        return False, "You cannot book a listing " \
+                      "for today or any previous day!"
 
-    current_listing_bookings = Booking.query.filter_by(listing_id=Listing.listing_id).all()
+    current_listing_bookings = \
+        Booking.query.filter_by(listing_id=Listing.listing_id).all()
 
     # compare the date we want to existing bookings with the same listing
     for booking in current_listing_bookings:
         if booked_date == booking.date:
-            return False, "This listing is already booked for the desired date."
+            return False, "This listing is already booked" \
+                          " for the desired date."
 
     booking_obj = Booking(user_id=user.user_id,
                           listing_id=listing.listing_id,
