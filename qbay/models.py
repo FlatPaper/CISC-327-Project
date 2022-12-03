@@ -119,7 +119,7 @@ class Booking(db.Model):
         price: The price the listing was rented for
         date: The time at which the booking is posted
     """
-    __tablename__ = 'transactions'
+    __tablename__ = 'bookings'
 
     booking_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
