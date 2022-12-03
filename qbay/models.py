@@ -339,3 +339,41 @@ def update_listing(listing_id: int, title=None,
     db.session.commit()
 
     return True, "Listing has been updated."
+
+
+def book_listing(listing_id: int, user_id: int, booked_date: date):
+    """
+    Backend method to book a listing.
+    listing_id: listing id that we want to book
+    user_id: user id that wants to book the listing
+    booked_date: given in the format date(year, month, day)
+    """
+    user: User = User.query.get(user_id)
+    listing: Listing = Listing.query.get(listing_id)
+
+    if user.user_id == listing.user_id:
+        return False, "A user cannot book a listing for his/her own listing."
+
+    if user.balance < listing.price:
+        return False, "The listing price is greater than your balance."
+
+    if booked_date <= date.today():
+        return False, "You cannot book a listing for today or any previous day!"
+
+    current_listing_bookings = Booking.query.filter_by(listing_id=Listing.listing_id).all()
+
+    # compare the date we want to existing bookings with the same listing
+    for booking in current_listing_bookings:
+        if booked_date == booking.date:
+            return False, "This listing is already booked for the desired date."
+
+    booking_obj = Booking(user_id=user.user_id,
+                          listing_id=listing.listing_id,
+                          price=listing.price,
+                          date=booked_date)
+
+    db.session.add(booking_obj)
+    db.session.commit()
+
+    return True, "Booking was created!"
+
