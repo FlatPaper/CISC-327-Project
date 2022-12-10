@@ -1,8 +1,8 @@
 from qbay.models import register, login, update_user_profile
-from qbay.models import create_listing, update_listing
+from qbay.models import create_listing, update_listing, book_listing
 from qbay.models import User, Listing
 
-from datetime import datetime
+from datetime import datetime, date
 
 
 def test_r1_1_user_register():
@@ -906,3 +906,147 @@ def test_r5_4_8_update_listing():
         listing_id=listing_test.listing_id,
         title="Test Title R5 4 3"
     )[0] is False
+
+
+def test_r6_1_book_listing():
+    """
+    Check a user can book a listing.
+    """
+    # Create two accounts to validate booking system
+    assert register(
+        username="valid user 1",
+        email="valid1@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    assert register(
+        username="valid user 2",
+        email="valid2@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    user1 = User.query.filter_by(email="valid1@gmail.com").all()[0]
+    user2 = User.query.filter_by(email="valid2@gmail.com").all()[0]
+
+    # Create listing for user 2
+    assert create_listing(
+        "User 2 Test House",
+        "A nice house in the city",
+        50, "123 University Av", user2.user_id)[0] is True
+
+    listing = Listing.query.filter_by(title="User 2 Test House").all()[0]
+
+    # User 1 books user 2's listing
+    assert book_listing(
+        listing.listing_id, user1.user_id, date(2022, 12, 30)
+    )[0] is True
+
+
+def test_r6_2_book_listing():
+    """
+    User cannot book their own listing.
+    """
+    assert register(
+        username="single user",
+        email="email@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    user = User.query.filter_by(email="email@gmail.com").all()[0]
+
+    assert create_listing(
+        "User 1 Test House",
+        "This is a very cool house!",
+        50, "123 University Av", user.user_id)[0] is True
+    
+    listing = Listing.query.filter_by(title="User 1 Test House").all()[0]
+
+    assert book_listing(
+        listing.listing_id, user.user_id, date(2022, 12, 30)
+    )[0] is False
+
+
+def test_r6_3_book_listing():
+    """
+    User cannot book listing more than their balance.
+    """
+    # Create two accounts to check whether booking can be made if user
+    # has insufficient funds
+    assert register(
+        username="user 1",
+        email="userone@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    assert register(
+        username="user 2",
+        email="usertwo@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    user1 = User.query.filter_by(email="userone@gmail.com").all()[0]
+    user2 = User.query.filter_by(email="usertwo@gmail.com").all()[0]
+
+    # Create listing for user 2, cost $101
+    assert create_listing(
+        "Test House",
+        "A very cool and interesting house description",
+        101, "123 University Av", user2.user_id)[0] is True
+
+    listing = Listing.query.filter_by(title="Test House").all()[0]
+
+    # User 1 tries to book user 2's listing
+    assert book_listing(
+        listing.listing_id, user1.user_id, date(2022, 12, 30)
+    )[0] is False
+
+
+def test_r6_4_book_listing():
+    """
+    User cannot book a listing that is already booked with
+    the overlapped dates.
+    """
+    # Create 3 users to test that an already booked listing
+    # cannot be rebooked
+    assert register(
+        username="test user 1",
+        email="user1@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    assert register(
+        username="test user 2",
+        email="user2@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    assert register(
+        username="test user 3",
+        email="user3@gmail.com",
+        password="GoodPass!"
+    )[0] is True
+
+    user1 = User.query.filter_by(email="user1@gmail.com").all()[0]
+    user2 = User.query.filter_by(email="user2@gmail.com").all()[0]
+    user3 = User.query.filter_by(email="user3@gmail.com").all()[0]
+
+    # Create listing for user 2
+    assert create_listing(
+        "User Two Test House",
+        "A very cool and interesting house description",
+        50, "123 University Av", user2.user_id)[0] is True
+
+    listing = Listing.query.filter_by(title="User Two Test House").all()[0]
+
+    # User 1 books user 2's listing
+    assert book_listing(
+        listing.listing_id, user1.user_id, date(2023, 12, 30)
+    )[0] is True
+    # User 3 also tries to book user 2's listing on the same day as user 1
+    assert book_listing(
+        listing.listing_id, user3.user_id, date(2023, 12, 30)
+    )[0] is False
+    # User 3 books user 2's listing a day after user 1
+    assert book_listing(
+        listing.listing_id, user3.user_id, date(2023, 12, 31)
+    )[0] is True

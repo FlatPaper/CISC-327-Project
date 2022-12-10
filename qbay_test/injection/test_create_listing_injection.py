@@ -8,7 +8,6 @@ def test_create_listing_injection_title():
         inject different lines into the "title" argument
         of the create_listing function to ensure that there
         is no weakpoint in the code that could be exploited
-        
     """
     current_folder = Path(__file__).parent
     f = open(current_folder.joinpath('injection.txt'))
@@ -52,7 +51,7 @@ def test_create_listing_injection_price():
                        user_id=1)
         i += 1
     f.close()
-    
+
 
 def test_create_listing_injection_address():
     current_folder = Path(__file__).parent
