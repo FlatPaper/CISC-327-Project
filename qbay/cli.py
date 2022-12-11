@@ -1,7 +1,7 @@
 from qbay.models import register, login, update_user_profile, \
     create_listing, update_listing, book_listing
 from qbay.models import User, Listing
-from datetime import datetime, date
+from datetime import date
 
 
 def register_page():
@@ -56,12 +56,13 @@ def update_user_page(user_id):
 
     return update_user_profile(user_id, username, email, address, postal_code)
 
+
 def create_listing_page(current_user):
     title = input('Enter the title of your listing: ')
     address = input('Enter the address of your property: ')
     description = input('Enter the description of your property: ')
     price = input('Enter the price per night (whole dollars): ')
-    
+
     flag, msg = create_listing(title, description, price, address,
                                current_user)
     if flag is False:
@@ -73,7 +74,7 @@ def create_listing_page(current_user):
         print("Address: {}".format(address))
         print("Description: {}".format(description))
         print("Price: ${}".format(price))
-    
+
 
 def update_listing_page(user_id):
     print("---------------------------------------------------------")
@@ -117,22 +118,23 @@ def update_listing_page(user_id):
                               address)
     except ValueError:
         return False, ValueError
-    
+
+
 def book_listing_page(user_id: int):
     print("---------------------------------------------------------")
     print(f"The current listings are: {Listing.query.filter_by().all()}")
-    listing_id = int(input('Please enter the listing id of the listing you want '
-                       'to book: '))
+    listing_id = int(input('Please enter the listing id of the listing you '
+                           'want to book: '))
     year = int(input('Please enter the year you would like to reserve this '
-                'listing for (in yyyy format): '))
+                     'listing for (in yyyy format): '))
     month = int(input('Please enter the month you would like to reserve this '
-                'listing for (in mm format): '))
+                      'listing for (in mm format): '))
     day = int(input('Please enter the day you would like to reserve this '
-                'listing for (in dd format): '))
-    
+                    'listing for (in dd format): '))
+
     listing = Listing.query.get(listing_id)
     if listing is None:
         print("Listing does not exist.")
-    
+
     result = book_listing(listing_id, user_id, date(year, month, day))
     print(result[1])
