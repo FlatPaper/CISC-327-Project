@@ -26,9 +26,9 @@ def test_booking_input_partition():
     register(email="lister@gmail.com", password="Pass_list1",
              username="lister")
     create_listing(title="bookit", description="this should really get booked",
-                   price=100, address= "123book", user_id= 2)
+                   price=100, address="123book", user_id=2)
     create_listing(title="pricey", description="this is really too expensive",
-                   price=500, address= "124book", user_id= 2)
+                   price=500, address="124book", user_id=2)
 
     for i in range(1, 6):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
@@ -65,9 +65,9 @@ def test_booking_output_exhaustive():
     register(email="lister@gmail.com", password="Pass_list1",
              username="lister")
     create_listing(title="bookit", description="this should really get booked",
-                   price=100, address= "123book", user_id= 2)
+                   price=100, address="123book", user_id=2)
     create_listing(title="pricey", description="this is really too expensive",
-                   price=500, address= "124book", user_id= 2)
+                   price=500, address="124book", user_id=2)
 
     for i in range(6, 12):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
@@ -99,9 +99,9 @@ def test_booking_input_boundary():
     register(email="lister@gmail.com", password="Pass_list1",
              username="lister")
     create_listing(title="bookit", description="this should really get booked",
-                   price=100, address= "123book", user_id= 2)
+                   price=100, address="123book", user_id=2)
     create_listing(title="pricey", description="this is really too expensive",
-                   price=500, address= "124book", user_id= 2)
+                   price=500, address="124book", user_id=2)
 
     for i in range(12, 14):
         expected_in = open(current_folder.joinpath('test' + str(i) + '.in'))
