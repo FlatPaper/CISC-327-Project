@@ -1,6 +1,6 @@
 from qbay.models import *
 from qbay.cli import register_page, login_page, update_user_page, \
-    create_listing_page, update_listing_page
+    create_listing_page, update_listing_page, book_listing_page
 
 
 def main():
@@ -38,6 +38,11 @@ def main():
             if selection == "4":
                 logged_in = False
                 current_user = None
+            if selection == "5":
+                user_email = current_user[0]
+                user_id = User.query.filter_by(
+                    email=user_email).all()[0].user_id
+                book_listing_page(user_id)
         else:
             selection = input(
                 "Your options are as follows:\n"
