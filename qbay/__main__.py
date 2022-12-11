@@ -13,8 +13,7 @@ def main():
                 "Please press 1 to create a listing.\n"
                 "Please press 2 to update a listing.\n"
                 "Please press 3 to update your user profile page.\n"
-                "Please press 4 to book a listing.\n"
-                "Please press 5 to log out.\n"
+                "Please press 4 to log out.\n"
             )
             selection = selection.strip()
             if selection == "1":
@@ -37,13 +36,13 @@ def main():
                     print("Unable to update profile!")
                     print(result[1])
             if selection == "4":
+                logged_in = False
+                current_user = None
+            if selection == "5":
                 user_email = current_user[0]
                 user_id = User.query.filter_by(
                     email=user_email).all()[0].user_id
                 book_listing_page(user_id)
-            if selection == "5":
-                logged_in = False
-                current_user = None
         else:
             selection = input(
                 "Your options are as follows:\n"
