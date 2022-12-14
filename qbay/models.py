@@ -256,8 +256,8 @@ def create_listing(title: str, description: str, price: int,
     try:
         price = int(price)
     except ValueError:
-        return False, "Price needs to be an integer."
-
+        return False, "Price needs to be an integer."    
+    
     if price < 10 or price > 10000:
         return False, "Price must be between [10, 10000]."
 
@@ -265,7 +265,7 @@ def create_listing(title: str, description: str, price: int,
     try:
         user_id = int(user_id)
     except ValueError:
-        return False, "User ID needs to be an integer."
+        return False, "User ID needs to be an integer."    
 
     user = User.query.get(user_id)
     if user is None:
@@ -348,8 +348,14 @@ def book_listing(listing_id: int, user_id: int, booked_date: date):
     user_id: user id that wants to book the listing
     booked_date: given in the format date(year, month, day)
     """
-    user: User = User.query.get(user_id)
-    listing: Listing = Listing.query.get(listing_id)
+    if isinstance(user_id, int):
+        user: User = User.query.get(user_id)
+    else:
+        return False, "User ID must an integer"
+    if isinstance(listing_id, int):
+        listing: Listing = Listing.query.get(listing_id)
+    else:
+        return False, "Listing ID must an integer"
 
     if user.user_id == listing.user_id:
         return False, "A user cannot book a listing for his/her own listing."
@@ -379,3 +385,4 @@ def book_listing(listing_id: int, user_id: int, booked_date: date):
     db.session.commit()
 
     return True, "Booking was created!"
+
