@@ -1,0 +1,28 @@
+Your options are as follows:
+Please press 1 to log in.
+Please press 2 to register an account.
+Please press 3 to exit.
+Please input email:
+Please input password:
+Logged in!
+Your options are as follows:
+Please press 1 to create a listing.
+Please press 2 to update a listing.
+Please press 3 to update your user profile page.
+Please press 4 to log out.
+---------------------------------------------------------
+The current listings are: [<Listing 1>, <Listing 2>]
+Please enter the listing id of the listing you want to book:
+Please enter the year you would like to reserve this listing for (in yyyy format):
+Please enter the month you would like to reserve this listing for (in mm format):
+Please enter the day you would like to reserve this listing for (in dd format):
+Booking was created!
+Your options are as follows:
+Please press 1 to create a listing.
+Please press 2 to update a listing.
+Please press 3 to update your user profile page.
+Please press 4 to log out.
+Your options are as follows:
+Please press 1 to log in.
+Please press 2 to register an account.
+Please press 3 to exit.
